@@ -20,10 +20,15 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "prisma": "^5.19.0"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.5.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "prisma": "^5.22.0",
+    "typescript": "5.9.3"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }
-
