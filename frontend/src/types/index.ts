@@ -79,6 +79,14 @@ export interface Pagination {
   totalPages: number;
 }
 
+export interface PaginatedResponse<T> {
+  products: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface ProductsResponseData {
   products: Product[];
   pagination: Pagination;

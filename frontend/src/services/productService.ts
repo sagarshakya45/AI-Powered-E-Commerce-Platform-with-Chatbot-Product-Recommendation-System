@@ -1,30 +1,48 @@
-import { api } from './api';
-import { ApiResponse, Category, Product, ProductsResponseData } from '../types';
+import apiClient from './apiClient';
+import { Product, ApiResponse, PaginatedResponse } from '../types';
 
 export interface ProductQueryParams {
+  page?: number;
+  limit?: number;
   search?: string;
+  category?: string;
   categoryId?: string;
   minPrice?: number;
   maxPrice?: number;
+  minRating?: number;
+  brand?: string;
+  inStock?: boolean;
   isFeatured?: boolean;
-  sortBy?: string;
-  page?: number;
-  limit?: number;
+  sort?: string;
 }
 
 export const productService = {
-  async getProducts(params: ProductQueryParams = {}): Promise<ApiResponse<ProductsResponseData>> {
-    const response = await api.get('/products', { params });
-    return response.data;
+  getProducts: async (params?: ProductQueryParams): Promise<PaginatedResponse<Product>> => {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>('/products', {
+      params,
+    });
+    return response.data.data!;
   },
 
-  async getProductByIdOrSlug(idOrSlug: string): Promise<ApiResponse<{ product: Product }>> {
-    const response = await api.get(`/products/${idOrSlug}`);
-    return response.data;
+  getProductBySlug: async (slug: string): Promise<Product> => {
+    const response = await apiClient.get<ApiResponse<{ product: Product }>>(`/products/${slug}`);
+    return response.data.data!.product;
   },
 
-  async getCategories(): Promise<ApiResponse<{ categories: Category[] }>> {
-    const response = await api.get('/categories');
-    return response.data;
+  createProduct: async (data: Partial<Product>): Promise<Product> => {
+    const response = await apiClient.post<ApiResponse<{ product: Product }>>('/products', data);
+    return response.data.data!.product;
+  },
+
+  updateProduct: async (id: string, data: Partial<Product>): Promise<Product> => {
+    const response = await apiClient.put<ApiResponse<{ product: Product }>>(`/products/${id}`, data);
+    return response.data.data!.product;
+  },
+
+  deleteProduct: async (id: string): Promise<{ id: string; message: string }> => {
+    const response = await apiClient.delete<ApiResponse<{ id: string; message: string }>>(`/products/${id}`);
+    return response.data.data!;
   },
 };
+
+export default productService;
