@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/customer/HomePage';
+import { ProductsPage } from './pages/customer/ProductsPage';
+import { ProductDetailPage } from './pages/customer/ProductDetailPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ProfilePage } from './pages/auth/ProfilePage';
@@ -35,6 +37,10 @@ export const App = () => {
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/shop" element={<ProductsPage />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/products/:id" element={<ProductDetailPage />} />
+              <Route path="/categories" element={<ProductsPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route
