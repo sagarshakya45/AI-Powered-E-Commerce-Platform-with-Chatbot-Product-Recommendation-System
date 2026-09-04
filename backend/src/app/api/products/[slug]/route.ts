@@ -4,6 +4,7 @@ import { handleControllerError } from '@/utils/errorHandler';
 import { updateProductSchema } from '@/validators/productValidator';
 import { ProductService } from '@/services/productService';
 import { handleOptions, corsHeaders } from '@/lib/cors';
+import { requireAdmin } from '@/utils/auth';
 
 export async function OPTIONS() {
   return handleOptions();
@@ -30,6 +31,11 @@ export async function PUT(
   { params }: { params: { slug: string } }
 ) {
   try {
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return ApiResponse.error('Admin access required', 403);
+    }
+
     const { slug } = params;
     const body = await req.json();
 
@@ -50,6 +56,11 @@ export async function DELETE(
   { params }: { params: { slug: string } }
 ) {
   try {
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return ApiResponse.error('Admin access required', 403);
+    }
+
     const { slug } = params;
 
     // Call service layer

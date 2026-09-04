@@ -3,8 +3,13 @@ import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 import { prisma } from '../lib/prisma';
 
-const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'fallback_access_secret';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret';
+function requireSecret(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is not configured`);
+  }
+  return value;
+}
 
 export interface TokenPayload {
   userId: string;
@@ -22,23 +27,23 @@ export async function comparePassword(password: string, hashedPassword: string):
 }
 
 export function generateAccessToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_ACCESS_SECRET, {
+  return jwt.sign(payload, requireSecret('JWT_ACCESS_SECRET'), {
     expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || '15m') as any,
   });
 }
 
 export function generateRefreshToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_REFRESH_SECRET, {
+  return jwt.sign(payload, requireSecret('JWT_REFRESH_SECRET'), {
     expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as any,
   });
 }
 
 export function verifyAccessToken(token: string): TokenPayload {
-  return jwt.verify(token, JWT_ACCESS_SECRET) as TokenPayload;
+  return jwt.verify(token, requireSecret('JWT_ACCESS_SECRET')) as TokenPayload;
 }
 
 export function verifyRefreshToken(token: string): TokenPayload {
-  return jwt.verify(token, JWT_REFRESH_SECRET) as TokenPayload;
+  return jwt.verify(token, requireSecret('JWT_REFRESH_SECRET')) as TokenPayload;
 }
 
 export function createCookieHeader(name: string, value: string, maxAgeSeconds: number): string {

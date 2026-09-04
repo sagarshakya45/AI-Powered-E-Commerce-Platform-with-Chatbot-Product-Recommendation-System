@@ -8,6 +8,23 @@ import { ProductDetailPage } from '../pages/ProductDetailPage';
 import { CartPage } from '../pages/CartPage';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
+import { WishlistPage } from '../pages/WishlistPage';
+import { ProfilePage } from '../pages/ProfilePage';
+import { CheckoutPage } from '../pages/CheckoutPage';
+import { OrdersPage } from '../pages/OrdersPage';
+import { AddressesPage } from '../pages/AddressesPage';
+import { SalesmanApplyPage } from '../pages/SalesmanApplyPage';
+import { ProtectedRoute } from './ProtectedRoute';
+import { AdminRoute } from './AdminRoute';
+import { AdminLayout } from '../layouts/AdminLayout';
+import { DashboardPage as AdminDashboard } from '../pages/admin/DashboardPage';
+import { ProductsPage as AdminProducts } from '../pages/admin/ProductsPage';
+import { ProductFormPage as AdminProductForm } from '../pages/admin/ProductFormPage';
+import { OrdersPage as AdminOrders } from '../pages/admin/OrdersPage';
+import { CustomersPage as AdminCustomers } from '../pages/admin/CustomersPage';
+import { CouponsPage as AdminCoupons } from '../pages/admin/CouponsPage';
+import { AdminSalesmanPage } from '../pages/admin/SalesmanPage';
+import { SettingsPage as AdminSettings } from '../pages/admin/SettingsPage';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -18,6 +35,37 @@ export const AppRoutes: React.FC = () => {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
+        
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/account" element={<ProfilePage />} />
+          <Route path="/account/profile" element={<ProfilePage />} />
+          <Route path="/account/addresses" element={<AddressesPage />} />
+          <Route path="/account/orders" element={<OrdersPage />} />
+          <Route path="/account/orders/:id" element={<OrdersPage />} />
+          <Route path="/account/wishlist" element={<WishlistPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/addresses" element={<AddressesPage />} />
+          <Route path="/apply-salesman" element={<SalesmanApplyPage />} />
+        </Route>
+      </Route>
+
+      {/* Admin Layout */}
+      <Route element={<AdminRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/products/new" element={<AdminProductForm />} />
+          <Route path="/admin/products/:id/edit" element={<AdminProductForm />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/customers" element={<AdminCustomers />} />
+          <Route path="/admin/coupons" element={<AdminCoupons />} />
+          <Route path="/admin/salesman-applications" element={<AdminSalesmanPage />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+        </Route>
       </Route>
 
       {/* Auth Layout */}

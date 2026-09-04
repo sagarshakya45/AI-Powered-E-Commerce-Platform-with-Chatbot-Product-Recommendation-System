@@ -276,9 +276,11 @@ export const CartPage: React.FC = () => {
             </div>
 
             {/* Checkout CTA */}
-            <Button size="lg" className="w-full text-sm font-bold shadow-lg shadow-brand-500/20">
-              Proceed to Checkout
-            </Button>
+            <Link to="/checkout">
+              <Button size="lg" className="w-full text-sm font-bold shadow-lg shadow-brand-500/20">
+                Proceed to Checkout
+              </Button>
+            </Link>
 
             {/* Trust Badges */}
             <div className="grid grid-cols-2 gap-2 pt-2">

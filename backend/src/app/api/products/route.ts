@@ -4,6 +4,7 @@ import { handleControllerError } from '@/utils/errorHandler';
 import { productQuerySchema, createProductSchema } from '@/validators/productValidator';
 import { ProductService } from '@/services/productService';
 import { handleOptions, corsHeaders } from '@/lib/cors';
+import { requireAdmin } from '@/utils/auth';
 
 export async function OPTIONS() {
   return handleOptions();
@@ -33,6 +34,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return ApiResponse.error('Admin access required', 403);
+    }
+
     const body = await req.json();
 
     // Validate payload with Zod

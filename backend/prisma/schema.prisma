@@ -10,6 +10,13 @@ datasource db {
 enum Role {
   CUSTOMER
   ADMIN
+  SALESMAN
+}
+
+enum SalesmanAppStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum OrderStatus {
@@ -49,10 +56,29 @@ model User {
   orders        Order[]
   reviews       Review[]
   refreshTokens RefreshToken[]
+  recommendations RecommendationEvent[]
+  chatConversations ChatConversation[]
+  salesmanApplication SalesmanApplication?
 
   @@index([email])
   @@index([role])
   @@map("users")
+}
+
+model SalesmanApplication {
+  id           String            @id @default(uuid())
+  userId       String            @unique
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName String
+  phoneNumber  String
+  reason       String
+  status       SalesmanAppStatus @default(PENDING)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("salesman_applications")
 }
 
 model RefreshToken {
@@ -128,6 +154,7 @@ model Product {
   wishlistItems WishlistItem[]
   orderItems    OrderItem[]
   reviews       Review[]
+  recommendationEvents RecommendationEvent[]
 
   @@index([slug])
   @@index([categoryId])
@@ -302,4 +329,44 @@ model Coupon {
   @@index([code])
   @@index([isActive])
   @@map("coupons")
+}
+
+model RecommendationEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  eventType String   // e.g., "VIEW", "PURCHASE", "CART"
+  score     Float?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([productId])
+  @@map("recommendation_events")
+}
+
+model ChatConversation {
+  id        String        @id @default(uuid())
+  userId    String?
+  user      User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  title     String?
+  messages  ChatMessage[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([userId])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id             String           @id @default(uuid())
+  conversationId String
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String           // "user", "assistant"
+  content        String
+  createdAt      DateTime         @default(now())
+
+  @@index([conversationId])
+  @@map("chat_messages")
 }

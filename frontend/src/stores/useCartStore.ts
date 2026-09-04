@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem, Product } from '../types';
 import apiClient from '../services/apiClient';
+import { useToastStore } from './useToastStore';
 
 export interface AppliedCoupon {
   code: string;
@@ -44,6 +45,7 @@ export const useCartStore = create<CartState>()(
       coupon: null,
 
       addItem: (product: Product, quantity = 1) => {
+        useToastStore.getState().showToast(product, quantity);
         set((state) => {
           const existingIndex = state.items.findIndex((item) => item.product.id === product.id);
           if (existingIndex > -1) {

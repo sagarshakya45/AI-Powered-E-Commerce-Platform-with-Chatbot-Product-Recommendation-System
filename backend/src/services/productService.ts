@@ -37,22 +37,22 @@ export class ProductService {
     return ProductRepository.create(input, slug);
   }
 
-  static async updateProduct(id: string, input: UpdateProductInput) {
-    const existing = await ProductRepository.findById(id);
+  static async updateProduct(identifier: string, input: UpdateProductInput) {
+    const existing = await ProductRepository.findBySlugOrId(identifier);
     if (!existing) {
-      throw new AppError(`Product with ID '${id}' not found`, 404);
+      throw new AppError(`Product '${identifier}' not found`, 404);
     }
 
-    return ProductRepository.update(id, input);
+    return ProductRepository.update(existing.id, input);
   }
 
-  static async deleteProduct(id: string) {
-    const existing = await ProductRepository.findById(id);
+  static async deleteProduct(identifier: string) {
+    const existing = await ProductRepository.findBySlugOrId(identifier);
     if (!existing) {
-      throw new AppError(`Product with ID '${id}' not found`, 404);
+      throw new AppError(`Product '${identifier}' not found`, 404);
     }
 
-    await ProductRepository.delete(id);
-    return { id, message: 'Product successfully deleted' };
+    await ProductRepository.delete(existing.id);
+    return { id: existing.id, message: 'Product successfully deleted' };
   }
 }

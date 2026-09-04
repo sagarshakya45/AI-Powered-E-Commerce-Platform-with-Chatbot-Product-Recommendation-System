@@ -1,0 +1,85 @@
+==================================================
+AuraMart E-Commerce Platform - Full Architecture
+==================================================
+
+1. HIGH-LEVEL OVERVIEW
+--------------------------------------------------
+AuraMart is a modern, AI-powered e-commerce platform built using a decoupled client-server (Frontend/Backend) architecture. It uses the latest web technologies for a highly responsive, scalable, and secure shopping experience.
+
+- Frontend: React (Vite) + Zustand + React Query + Tailwind CSS
+- Backend: Next.js (App Router API) + Node.js + Prisma ORM
+- Database: PostgreSQL (Dockerized)
+- AI Engine: Google Gemini / OpenAI (Abstracted AI Provider)
+- Payments: Stripe integration
+
+2. DIRECTORY STRUCTURE
+--------------------------------------------------
+/d/Web/E-com/
+├── frontend/               # React Client Application
+│   ├── src/
+│   │   ├── components/     # Reusable UI components (Buttons, Inputs, Modals)
+│   │   ├── features/       # Feature-driven modules (auth, products, cart, admin, ai)
+│   │   ├── layouts/        # Global layout wrappers (AuthLayout, AdminLayout)
+│   │   ├── pages/          # Full page views matching specific routes
+│   │   ├── routes/         # React Router configurations & Protected routes
+│   │   ├── services/       # Axios API client configurations
+│   │   ├── stores/         # Zustand global state (Auth, Cart, Wishlist)
+│   │   └── utils/          # Helpers (formatters, validators)
+│   ├── index.html
+│   └── vite.config.ts
+│
+├── backend/                # Next.js Server & API
+│   ├── prisma/
+│   │   ├── schema.prisma   # PostgreSQL Database Schema definition
+│   │   └── seed.js         # Database seeding script
+│   ├── src/
+│   │   ├── app/api/        # Next.js Route Handlers (REST endpoints)
+│   │   ├── lib/            # Shared libraries (Prisma client, CORS handling)
+│   │   ├── services/       # Core business logic (Products, Auth, AI, Orders)
+│   │   ├── utils/          # JWT handling, password hashing, error wrappers
+│   │   └── validators/     # Zod schema definitions for request validation
+│   └── next.config.mjs     # Server config & CORS settings
+│
+└── docker-compose.yml      # Local development PostgreSQL container setup
+
+
+3. DATA FLOW & STATE MANAGEMENT
+--------------------------------------------------
+[ Client Side (Frontend) ]
+- Zustand: Manages local, synchronous global state such as the active User session, Shopping Cart items, and Wishlist. Cart/Wishlist are persisted to `localStorage`.
+- React Query (@tanstack/react-query): Manages asynchronous server state. Handles data fetching, caching, loading states, and optimistic UI updates for dynamic data (e.g., Products list, Orders, Customer Reviews).
+
+[ Server Side (Backend) ]
+- Next.js Route Handlers (app/api/*): Act as RESTful controllers. They parse the incoming HTTP request, validate the payload using Zod, and enforce role-based authentication (JWT via cookies).
+- Service Layer (src/services/*): Handles complex business logic (e.g., invoking the AI provider, calculating order totals, handling Stripe sessions) keeping the controllers lean.
+- Prisma ORM: Translates Service layer requests into optimized SQL queries for PostgreSQL.
+
+4. DATABASE SCHEMA (Prisma/PostgreSQL)
+--------------------------------------------------
+- User: Manages accounts (Roles: CUSTOMER, ADMIN)
+- RefreshToken: Stores JWT refresh tokens for secure session persistence
+- Category: Groups products logically
+- Product: Catalog items (includes price, stock, images, description)
+- Order: Customer purchases (tracks final amount, discount, status)
+- OrderItem: Individual items within a specific order
+- Address: Customer shipping/billing addresses
+- Payment: Tracks Stripe payment intent and status (PENDING, PAID)
+- Review: Customer ratings (1-5 stars) and text feedback for products
+- CartItem: Server-side persisted cart (synced with Zustand guest cart upon login)
+
+5. SECURITY ARCHITECTURE
+--------------------------------------------------
+- Authentication: Handled via JSON Web Tokens (JWT). Short-lived Access Tokens are stored securely, backed by long-lived Refresh Tokens.
+- Authorization: Middleware and utility functions (`authenticateUser`, `requireAdmin`) ensure strict Role-Based Access Control (RBAC). Admin routes are completely blocked from normal customers.
+- Validation: Zod schemas intercept all POST/PUT requests to validate data shape and sanitize inputs before touching the database.
+- Payments: PCI-compliant processing via Stripe Hosted Checkout. Webhooks securely update local database statuses only upon cryptographic verification of the Stripe payload signature.
+
+6. AI INTEGRATION PIPELINE
+--------------------------------------------------
+The platform uses a Strategy Pattern for AI generation, allowing the model to be swapped between Gemini and OpenAI via environment variables.
+
+Features:
+1. Product Recommendations: Analyzes the product catalog to suggest featured items on the homepage.
+2. AI Chatbot: A sticky frontend widget that communicates with `/api/ai/chatbot` to answer user queries using context injected from the Prisma database.
+3. Review Summarization: Consolidates multiple user reviews on a product page into a single sentence sentiment summary.
+4. Product Descriptions: An admin-only tool that auto-generates SEO-friendly, high-converting product descriptions based solely on the product title.

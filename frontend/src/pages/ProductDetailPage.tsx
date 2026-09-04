@@ -6,6 +6,7 @@ import { useCartStore } from '../stores/useCartStore';
 import { formatCurrency, calculateDiscountPercentage } from '../utils/formatters';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { ProductReviews } from '../features/reviews/components/ProductReviews';
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -151,6 +152,9 @@ export const ProductDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Reviews Section */}
+      <ProductReviews productId={product.id} />
     </div>
   );
 };

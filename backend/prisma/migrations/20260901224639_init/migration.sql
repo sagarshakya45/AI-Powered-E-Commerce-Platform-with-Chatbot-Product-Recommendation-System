@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "Role" AS ENUM ('CUSTOMER', 'ADMIN');
 
 -- CreateEnum
@@ -216,6 +216,40 @@ CREATE TABLE "coupons" (
     CONSTRAINT "coupons_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "recommendation_events" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "productId" TEXT,
+    "eventType" TEXT NOT NULL,
+    "score" DOUBLE PRECISION,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "recommendation_events_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "chat_conversations" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "title" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "chat_conversations_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "chat_messages" (
+    "id" TEXT NOT NULL,
+    "conversationId" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "chat_messages_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -351,6 +385,18 @@ CREATE INDEX "coupons_code_idx" ON "coupons"("code");
 -- CreateIndex
 CREATE INDEX "coupons_isActive_idx" ON "coupons"("isActive");
 
+-- CreateIndex
+CREATE INDEX "recommendation_events_userId_idx" ON "recommendation_events"("userId");
+
+-- CreateIndex
+CREATE INDEX "recommendation_events_productId_idx" ON "recommendation_events"("productId");
+
+-- CreateIndex
+CREATE INDEX "chat_conversations_userId_idx" ON "chat_conversations"("userId");
+
+-- CreateIndex
+CREATE INDEX "chat_messages_conversationId_idx" ON "chat_messages"("conversationId");
+
 -- AddForeignKey
 ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -408,3 +454,14 @@ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_productId_fkey" FOREIGN KEY ("prod
 -- AddForeignKey
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- AddForeignKey
+ALTER TABLE "recommendation_events" ADD CONSTRAINT "recommendation_events_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "recommendation_events" ADD CONSTRAINT "recommendation_events_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "chat_conversations" ADD CONSTRAINT "chat_conversations_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "chat_messages" ADD CONSTRAINT "chat_messages_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES "chat_conversations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
