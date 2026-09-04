@@ -15,6 +15,7 @@ import {
 import { useCartStore } from '../stores/useCartStore';
 import { formatCurrency } from '../utils/formatters';
 import { Button } from '../components/ui/Button';
+import { BackButton } from '../components/common/BackButton';
 
 export const CartPage: React.FC = () => {
   const {
@@ -36,6 +37,7 @@ export const CartPage: React.FC = () => {
 
   const [couponCode, setCouponCode] = useState('');
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   const itemCount = getItemCount();
   const subtotal = getSubtotal();
@@ -43,11 +45,16 @@ export const CartPage: React.FC = () => {
   const discount = getDiscount();
   const total = getTotal();
 
-  const handleApplyCoupon = () => {
-    if (!couponCode.trim()) return;
-    const result = applyCoupon(couponCode);
-    setCouponMsg({ text: result.message, ok: result.success });
-    if (result.success) setCouponCode('');
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim() || isApplyingCoupon) return;
+    setIsApplyingCoupon(true);
+    try {
+      const result = await applyCoupon(couponCode);
+      setCouponMsg({ text: result.message, ok: result.success });
+      if (result.success) setCouponCode('');
+    } finally {
+      setIsApplyingCoupon(false);
+    }
   };
 
   /* ───── Empty cart ───── */
@@ -62,7 +69,7 @@ export const CartPage: React.FC = () => {
           <p className="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
             Looks like you haven't added any items to your shopping bag yet. Browse our catalog and discover something you love.
           </p>
-          <Link to="/products">
+          <Link to="/">
             <Button size="md" rightIcon={<ArrowRight className="w-4 h-4" />}>
               Start Shopping
             </Button>
@@ -77,13 +84,16 @@ export const CartPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Shopping Cart
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            {itemCount} {itemCount === 1 ? 'item' : 'items'} in your bag
-          </p>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Shopping Cart
+            </h1>
+            <p className="text-xs text-slate-500 mt-1">
+              {itemCount} {itemCount === 1 ? 'item' : 'items'} in your bag
+            </p>
+          </div>
         </div>
         <button
           onClick={clearCart}
@@ -180,7 +190,7 @@ export const CartPage: React.FC = () => {
           {/* Continue Shopping Link */}
           <div className="pt-2">
             <Link
-              to="/products"
+              to="/"
               className="inline-flex items-center space-x-1.5 text-xs font-bold text-brand-600 hover:text-brand-700 transition-colors"
             >
               <ArrowRight className="w-3.5 h-3.5 rotate-180" />
@@ -258,7 +268,7 @@ export const CartPage: React.FC = () => {
                     onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                     className="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20"
                   />
-                  <Button variant="outline" size="sm" onClick={handleApplyCoupon}>
+                  <Button variant="outline" size="sm" onClick={handleApplyCoupon} isLoading={isApplyingCoupon}>
                     Apply
                   </Button>
                 </div>
@@ -286,7 +296,7 @@ export const CartPage: React.FC = () => {
             <div className="grid grid-cols-2 gap-2 pt-2">
               <div className="text-center p-2 bg-slate-50 rounded-xl space-y-1 border border-slate-100">
                 <Truck className="w-4 h-4 mx-auto text-brand-600" />
-                <span className="block text-[10px] text-slate-500 font-semibold">Free over $50</span>
+                <span className="block text-[10px] text-slate-500 font-semibold">Free over {formatCurrency(50)}</span>
               </div>
               <div className="text-center p-2 bg-slate-50 rounded-xl space-y-1 border border-slate-100">
                 <ShieldCheck className="w-4 h-4 mx-auto text-brand-600" />

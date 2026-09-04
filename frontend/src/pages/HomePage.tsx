@@ -28,6 +28,7 @@ import {
   productsByCategory,
 } from '../data/catalog';
 import { HeroCarousel } from '../components/home/HeroCarousel';
+import { formatCurrency } from '../utils/formatters';
 import { ProductShelf } from '../components/home/ProductShelf';
 import { ProductCard } from '../components/products/ProductCard';
 import { ProductRecommendations } from '../features/products/components/ProductRecommendations';
@@ -44,7 +45,8 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 export const HomePage: React.FC = () => {
-  const { data, isLoading } = useGetProducts({ page: 1, limit: 100, sort: 'createdAt_desc' });
+  const homeParams = useMemo(() => ({ page: 1, limit: 100, sort: 'createdAt_desc' }), []);
+  const { data, isLoading } = useGetProducts(homeParams);
   const products = useMemo(() => mergeCatalog(data?.products), [data?.products]);
 
   // Recent searches: IDs stored in localStorage
@@ -146,7 +148,7 @@ export const HomePage: React.FC = () => {
               Shop By Category
             </h3>
             <Link
-              to="/products"
+              to="/"
               className="text-xs font-bold text-violet-600 hover:text-violet-700 flex items-center gap-1"
             >
               View All <ChevronRight className="w-3.5 h-3.5" />
@@ -177,7 +179,7 @@ export const HomePage: React.FC = () => {
         {/* Perks */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { icon: <Truck className="w-6 h-6 text-violet-600" />, title: 'Free Express Shipping', copy: 'On all orders above $50' },
+            { icon: <Truck className="w-6 h-6 text-violet-600" />, title: 'Free Express Shipping', copy: `On all orders above ${formatCurrency(50)}` },
             { icon: <RotateCcw className="w-6 h-6 text-indigo-600" />, title: '30-Day Easy Returns', copy: 'Instant hassle-free refunds' },
             { icon: <ShieldCheck className="w-6 h-6 text-pink-600" />, title: '100% Encrypted Checkout', copy: 'Secured with Stripe & SSL' },
           ].map((perk) => (
@@ -227,7 +229,7 @@ export const HomePage: React.FC = () => {
               <p className="text-xs text-slate-500 font-medium mt-1">Top-rated products loved by thousands of shoppers</p>
             </div>
             <Link
-              to="/products"
+              to="/"
               className="text-xs font-bold text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-full transition-colors"
             >
               See All
@@ -269,7 +271,7 @@ export const HomePage: React.FC = () => {
               </p>
             </div>
             <Link
-              to="/products"
+              to="/"
               className="text-xs font-bold text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-full transition-colors"
             >
               See All Catalog

@@ -23,7 +23,7 @@ interface CartState {
   clearCart: () => void;
 
   // Coupon Actions
-  applyCoupon: (code: string) => { success: boolean; message: string };
+  applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
 
   // Computed Properties (Client-side display)
@@ -114,29 +114,30 @@ export const useCartStore = create<CartState>()(
 
       clearCart: () => set({ items: [], coupon: null }),
 
-      applyCoupon: (code: string) => {
+      applyCoupon: async (code: string) => {
         const cleanCode = code.trim().toUpperCase();
-        if (cleanCode === 'WELCOME10') {
-          set({
-            coupon: {
-              code: 'WELCOME10',
-              discountType: 'PERCENTAGE',
-              discountValue: 10,
-            },
-          });
-          return { success: true, message: '10% Discount Coupon Applied!' };
-        } else if (cleanCode === 'SUMMER20') {
-          set({
-            coupon: {
-              code: 'SUMMER20',
-              discountType: 'FIXED',
-              discountValue: 20,
-            },
-          });
-          return { success: true, message: '$20 Discount Coupon Applied!' };
-        } else {
-          return { success: false, message: 'Invalid or expired coupon code' };
+        if (!cleanCode) {
+          return { success: false, message: 'Please enter a coupon code' };
         }
+
+        try {
+          const subtotal = get().getSubtotal();
+          const res = await apiClient.post('/coupons/validate', { code: cleanCode, subtotal });
+          const coupon = res.data?.data?.coupon;
+          if (coupon) {
+            set({
+              coupon: {
+                code: coupon.code,
+                discountType: coupon.discountType,
+                discountValue: coupon.discountValue,
+              },
+            });
+            return { success: true, message: 'Coupon applied successfully!' };
+          }
+        } catch (err: any) {
+          return { success: false, message: err.message || 'Invalid or expired coupon code' };
+        }
+        return { success: false, message: 'Invalid or expired coupon code' };
       },
 
       removeCoupon: () => set({ coupon: null }),

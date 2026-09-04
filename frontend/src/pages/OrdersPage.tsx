@@ -7,6 +7,7 @@ import { formatCurrency } from '../utils/formatters';
 import { Badge } from '../components/ui/Badge';
 import { OrderTrackingTimeline } from '../components/orders/OrderTrackingTimeline';
 import { printOrderReceipt } from '../utils/printReceipt';
+import { BackButton } from '../components/common/BackButton';
 
 export const OrdersPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -36,6 +37,7 @@ export const OrdersPage: React.FC = () => {
 
       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div className="flex items-center space-x-3">
+          <BackButton />
           <div className="w-10 h-10 bg-violet-600/10 border border-violet-500/20 text-violet-600 flex items-center justify-center rounded-2xl">
             <Package className="w-5 h-5" />
           </div>
@@ -46,7 +48,7 @@ export const OrdersPage: React.FC = () => {
         </div>
 
         <Link
-          to="/products"
+          to="/"
           className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-violet-600 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-full transition-colors"
         >
           <ShoppingBag className="w-3.5 h-3.5" />
@@ -68,7 +70,7 @@ export const OrdersPage: React.FC = () => {
           <h3 className="text-base font-bold text-slate-800">You haven't placed any orders yet</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">Explore our high-tech electronics, fashion, and home collections!</p>
           <Link
-            to="/products"
+            to="/"
             className="inline-block mt-2 text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white px-6 py-2.5 rounded-full shadow-md transition-all"
           >
             Explore Catalog

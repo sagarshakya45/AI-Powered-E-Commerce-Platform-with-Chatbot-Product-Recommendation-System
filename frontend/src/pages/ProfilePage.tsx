@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { User, LogOut, Package, MapPin, Heart, BadgeCheck, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useNavigate, Link } from 'react-router-dom';
+import { BackButton } from '../components/common/BackButton';
 
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useAuthStore();
@@ -18,9 +19,12 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-8">
       <div className="flex items-center justify-between border-b border-slate-200 pb-6">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Account</h1>
-          <p className="text-slate-500 text-xs font-medium mt-1">Manage your profile, orders, addresses, and vendor credentials.</p>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Account</h1>
+            <p className="text-slate-500 text-xs font-medium mt-1">Manage your profile, orders, addresses, and vendor credentials.</p>
+          </div>
         </div>
         <Button variant="outline" onClick={handleLogout} leftIcon={<LogOut className="w-4 h-4" />}>
           Sign Out

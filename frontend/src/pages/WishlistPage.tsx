@@ -5,6 +5,7 @@ import { useWishlistStore } from '../stores/useWishlistStore';
 import { useCartStore } from '../stores/useCartStore';
 import { Button } from '../components/ui/Button';
 import { formatCurrency } from '../utils/formatters';
+import { BackButton } from '../components/common/BackButton';
 
 export const WishlistPage: React.FC = () => {
   const { items, toggleWishlist, clearWishlist } = useWishlistStore();
@@ -20,7 +21,7 @@ export const WishlistPage: React.FC = () => {
           <h2 className="text-2xl font-bold text-slate-900">Your wishlist is empty</h2>
           <p className="text-slate-500 mt-2">Save items you love to your wishlist so you don't lose track of them.</p>
         </div>
-        <Link to="/products">
+        <Link to="/">
           <Button size="lg">Explore Products</Button>
         </Link>
       </div>
@@ -30,10 +31,13 @@ export const WishlistPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
-          <Heart className="w-8 h-8 text-rose-500 fill-rose-500" />
-          My Wishlist
-        </h1>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
+            <Heart className="w-8 h-8 text-rose-500 fill-rose-500" />
+            My Wishlist
+          </h1>
+        </div>
         <Button variant="outline" onClick={() => { if (window.confirm('Clear all wishlist items?')) { clearWishlist(); } }} leftIcon={<Trash2 className="w-4 h-4" />}>
           Clear All
         </Button>

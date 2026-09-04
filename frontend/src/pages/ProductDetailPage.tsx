@@ -45,9 +45,9 @@ export const ProductDetailPage: React.FC = () => {
           <Button variant="outline" size="sm" onClick={() => refetch()}>
             Retry
           </Button>
-          <Link to="/products">
+          <Link to="/">
             <Button size="sm" leftIcon={<ChevronLeft className="w-4 h-4" />}>
-              Back to Catalog
+              Back to Home
             </Button>
           </Link>
         </div>
@@ -64,11 +64,11 @@ export const ProductDetailPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-6">
       <Link
-        to="/products"
+        to="/"
         className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-brand-600 transition-colors"
       >
         <ChevronLeft className="w-4 h-4" />
-        <span>Back to Product Catalog</span>
+        <span>Back to Home</span>
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm">

@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { comparePassword, generateAccessToken, generateRefreshToken, createCookieHeader } from '@/utils/auth';
 import { loginSchema } from '@/validators/authValidator';
+import { getCorsHeaders } from '@/lib/cors';
+
+export async function OPTIONS(req: NextRequest) {
+  return new Response(null, { status: 204, headers: getCorsHeaders(req.headers.get('origin')) });
+}
 
 export async function POST(req: NextRequest) {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
   try {
     const body = await req.json();
 
@@ -19,7 +26,7 @@ export async function POST(req: NextRequest) {
             message: err.message,
           })),
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -36,7 +43,7 @@ export async function POST(req: NextRequest) {
           statusCode: 401,
           message: 'Invalid email or password',
         },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -48,7 +55,7 @@ export async function POST(req: NextRequest) {
           statusCode: 401,
           message: 'Invalid email or password',
         },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -82,7 +89,7 @@ export async function POST(req: NextRequest) {
         message: 'Login successful',
         data: { user: userProfile },
       },
-      { status: 200 }
+      { status: 200, headers: corsHeaders }
     );
 
     response.headers.append(
@@ -102,7 +109,7 @@ export async function POST(req: NextRequest) {
         statusCode: 500,
         message: error.message || 'Internal server error during login',
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

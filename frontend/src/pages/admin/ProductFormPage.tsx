@@ -136,7 +136,7 @@ export const ProductFormPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Input type="number" step="0.01" label="Price ($)" required value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} />
+            <Input type="number" step="0.01" label="Price" required value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} />
             <Input type="number" label="Stock Quantity" required value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} />
             
             <div>

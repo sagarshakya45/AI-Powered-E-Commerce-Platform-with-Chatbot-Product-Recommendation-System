@@ -202,13 +202,13 @@ export const CouponsPage: React.FC = () => {
                     className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-3 py-2.5 text-xs text-white outline-none focus:border-violet-500"
                   >
                     <option value="PERCENTAGE">Percentage (%)</option>
-                    <option value="FIXED">Fixed Amount ($)</option>
+                    <option value="FIXED">Fixed Amount</option>
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                    Value {discountType === 'PERCENTAGE' ? '(%)' : '($)'}
+                    Value {discountType === 'PERCENTAGE' ? '(%)' : ''}
                   </label>
                   <input
                     type="number"
@@ -224,7 +224,7 @@ export const CouponsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Min Order ($)</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Min Order</label>
                   <input
                     type="number"
                     value={minOrderAmount}

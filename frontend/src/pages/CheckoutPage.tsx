@@ -7,6 +7,7 @@ import { Input } from '../components/ui/Input';
 import { formatCurrency } from '../utils/formatters';
 import { ShieldCheck, ArrowRight, Lock } from 'lucide-react';
 import apiClient from '../services/apiClient';
+import { BackButton } from '../components/common/BackButton';
 
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export const CheckoutPage: React.FC = () => {
     return (
       <div className="py-20 text-center space-y-4">
         <h2 className="text-2xl font-bold text-slate-900">Your cart is empty</h2>
-        <Button onClick={() => navigate('/products')}>Return to Shop</Button>
+        <Button onClick={() => navigate('/')}>Return to Home</Button>
       </div>
     );
   }
@@ -52,7 +53,7 @@ export const CheckoutPage: React.FC = () => {
         totalAmount: cartStore.getSubtotal(),
         discountAmount: cartStore.getDiscount(),
         finalAmount: cartStore.getTotal(),
-        couponId: cartStore.coupon?.code
+        couponCode: cartStore.coupon?.code
       };
       
       const orderRes = await apiClient.post('/orders', orderPayload);
@@ -80,7 +81,10 @@ export const CheckoutPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-2 gap-10">
       <div>
-        <h1 className="text-2xl font-bold mb-6 text-slate-900">Shipping Information</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <BackButton to="/cart" label="Cart" />
+          <h1 className="text-2xl font-bold text-slate-900">Shipping Information</h1>
+        </div>
         {errorMsg && <p className="p-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-sm font-semibold mb-6">{errorMsg}</p>}
         
         <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4">

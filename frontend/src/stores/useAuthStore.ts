@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { User } from '../types';
 import { authService } from '../services/authService';
 import { LoginFormData, RegisterFormData } from '../utils/validators';
+import { useCartStore } from './useCartStore';
 
 interface AuthState {
   user: User | null;
@@ -28,6 +29,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await authService.login(data);
       if (res.success) {
         set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+        useCartStore.getState().syncWithBackend();
       }
     } catch (err: any) {
       set({ error: err.message || 'Login failed', isLoading: false });
@@ -41,6 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await authService.register(data);
       if (res.success) {
         set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+        useCartStore.getState().syncWithBackend();
       }
     } catch (err: any) {
       set({ error: err.message || 'Registration failed', isLoading: false });
@@ -65,6 +68,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await authService.getCurrentUser();
       if (res.success && res.data.user) {
         set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+        useCartStore.getState().syncWithBackend();
       } else {
         set({ user: null, isAuthenticated: false, isLoading: false });
       }

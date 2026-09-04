@@ -65,7 +65,7 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Quick Navigation</h4>
             <ul className="space-y-2.5 text-xs font-medium">
               <li><Link to="/" className="hover:text-violet-400 transition-colors">Home Storefront</Link></li>
-              <li><Link to="/products" className="hover:text-violet-400 transition-colors">Full Catalog</Link></li>
+              <li><Link to="/" className="hover:text-violet-400 transition-colors">Full Catalog</Link></li>
               <li><Link to="/cart" className="hover:text-violet-400 transition-colors">Shopping Cart</Link></li>
               <li><Link to="/wishlist" className="hover:text-violet-400 transition-colors">Saved Wishlist</Link></li>
             </ul>

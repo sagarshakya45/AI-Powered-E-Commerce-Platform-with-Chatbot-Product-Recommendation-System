@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Star, MessageSquare, Send, Sparkles, PlusCircle, X, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import apiClient from '../../../services/apiClient';
 import { useAuthStore } from '../../../stores/useAuthStore';
 import { Button } from '../../../components/ui/Button';
@@ -203,12 +204,12 @@ export const ProductReviews: React.FC<{ productId: string }> = ({ productId }) =
             ) : !user ? (
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3">
                 <p className="text-xs text-slate-300 font-medium">Please sign in to post your review on AuraMart.</p>
-                <a
-                  href="/login"
+                <Link
+                  to="/login"
                   className="inline-block text-xs font-bold px-5 py-2.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white shadow-md"
                 >
                   Sign In Now
-                </a>
+                </Link>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">

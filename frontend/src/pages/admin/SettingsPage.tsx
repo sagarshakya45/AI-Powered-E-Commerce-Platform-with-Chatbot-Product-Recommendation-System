@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, Store, Shield, Cpu, Save, CheckCircle2, Globe, CreditCard } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import apiClient from '../../services/apiClient';
+import { detectCurrency, formatCurrency } from '../../utils/formatters';
+import { BackButton } from '../../components/common/BackButton';
 
 export const SettingsPage: React.FC = () => {
   const [storeName, setStoreName] = useState('AuraMart Electronics & Luxury');
   const [supportEmail, setSupportEmail] = useState('support@auramart.example.com');
-  const [currency, setCurrency] = useState('USD ($)');
+  const [currency, setCurrency] = useState(() => `${detectCurrency()} (${formatCurrency(0).charAt(0)})`);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState('99.00');
   const [enableAI, setEnableAI] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -34,6 +36,7 @@ export const SettingsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div className="flex items-center gap-3">
+          <BackButton to="/admin" label="Admin" />
           <div className="w-10 h-10 rounded-2xl bg-violet-600/10 border border-violet-500/20 text-violet-600 flex items-center justify-center">
             <Settings className="w-5 h-5" />
           </div>
@@ -101,7 +104,7 @@ export const SettingsPage: React.FC = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Free Shipping Threshold ($)</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Free Shipping Threshold ({formatCurrency(0).replace('0.00', '').trim()})</label>
             <input
               type="number"
               value={freeShippingThreshold}
