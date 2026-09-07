@@ -37,6 +37,7 @@ export const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
 
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -44,7 +45,14 @@ export const Navbar: React.FC = () => {
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const q = query.trim();
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  useEffect(() => {
+    const q = debouncedQuery.trim();
     if (q.length < 2) {
       setSuggestions([]);
       setShowDropdown(false);
@@ -76,7 +84,7 @@ export const Navbar: React.FC = () => {
 
     setSuggestions(results.slice(0, 8));
     setShowDropdown(true);
-  }, [query]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     let cancelled = false;
