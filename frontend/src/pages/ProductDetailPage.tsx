@@ -107,8 +107,8 @@ export const ProductDetailPage: React.FC = () => {
 
             <div className="flex items-center space-x-2 text-amber-500 text-xs font-bold bg-amber-50/80 px-3 py-1.5 rounded-xl w-fit">
               <Star className="w-4 h-4 fill-current text-amber-400" />
-              <span>{product.avgRating || '4.8'}</span>
-              <span className="text-slate-400 font-normal">({product.reviewCount || 10} reviews)</span>
+              <span>{(product.avgRating ?? 0).toFixed(1)}</span>
+              <span className="text-slate-400 font-normal">({product.reviewCount ?? 0} reviews)</span>
             </div>
 
             <div className="py-4 border-y border-slate-100 flex items-baseline space-x-3">

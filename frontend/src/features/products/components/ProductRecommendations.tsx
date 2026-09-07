@@ -129,7 +129,7 @@ export const ProductRecommendations: React.FC = () => {
                 <div className="flex items-center gap-1">
                   <div className="inline-flex items-center gap-0.5 bg-amber-50 border border-amber-200/60 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                     <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
-                    <span>{(product.avgRating ?? 4.5).toFixed(1)}</span>
+                    <span>{(product.avgRating ?? 0).toFixed(1)}</span>
                   </div>
                   <span className="text-[10px] text-slate-400">({product.reviewCount ?? 0})</span>
                 </div>

@@ -19,6 +19,7 @@ export const createOrderSchema = z.object({
     )
     .min(1, 'Cart is empty'),
   couponCode: z.string().optional().nullable(),
+  paymentMethod: z.enum(['card', 'cod']).default('card'),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;

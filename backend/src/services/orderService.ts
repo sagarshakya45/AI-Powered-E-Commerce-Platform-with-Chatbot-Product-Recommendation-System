@@ -66,7 +66,7 @@ export class OrderService {
 
       const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-      return tx.order.create({
+      const order = await tx.order.create({
         data: {
           userId,
           orderNumber,
@@ -75,10 +75,22 @@ export class OrderService {
           discountAmount,
           finalAmount,
           couponId,
+          paymentMethod: data.paymentMethod || 'card',
           items: { create: orderItems },
         },
         include: { items: true },
       });
+
+      await tx.payment.create({
+        data: {
+          orderId: order.id,
+          amount: finalAmount,
+          paymentMethod: data.paymentMethod || 'card',
+          status: data.paymentMethod === 'cod' ? 'PENDING' : 'PENDING',
+        },
+      });
+
+      return order;
     });
   }
 

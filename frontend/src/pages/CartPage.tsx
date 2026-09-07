@@ -15,7 +15,6 @@ import {
 import { useCartStore } from '../stores/useCartStore';
 import { formatCurrency } from '../utils/formatters';
 import { Button } from '../components/ui/Button';
-import { BackButton } from '../components/common/BackButton';
 
 export const CartPage: React.FC = () => {
   const {
@@ -85,7 +84,6 @@ export const CartPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <BackButton />
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Shopping Cart
@@ -286,11 +284,13 @@ export const CartPage: React.FC = () => {
             </div>
 
             {/* Checkout CTA */}
-            <Link to="/checkout">
-              <Button size="lg" className="w-full text-sm font-bold shadow-lg shadow-brand-500/20">
-                Proceed to Checkout
-              </Button>
-            </Link>
+            <div className="pt-4">
+              <Link to="/checkout">
+                <Button size="lg" className="w-full text-sm font-bold shadow-lg shadow-brand-500/20">
+                  Proceed to Checkout
+                </Button>
+              </Link>
+            </div>
 
             {/* Trust Badges */}
             <div className="grid grid-cols-2 gap-2 pt-2">

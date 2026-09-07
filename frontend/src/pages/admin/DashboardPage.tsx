@@ -57,7 +57,6 @@ export const DashboardPage: React.FC = () => {
       icon: DollarSign,
       color: 'text-emerald-600',
       bg: 'bg-emerald-100',
-      change: '+14.2%',
     },
     {
       name: 'Total Orders',
@@ -65,7 +64,6 @@ export const DashboardPage: React.FC = () => {
       icon: ShoppingCart,
       color: 'text-indigo-600',
       bg: 'bg-indigo-100',
-      change: '+8.4%',
     },
     {
       name: 'Active Products',
@@ -73,7 +71,6 @@ export const DashboardPage: React.FC = () => {
       icon: PackageSearch,
       color: 'text-amber-600',
       bg: 'bg-amber-100',
-      change: 'Catalog',
     },
     {
       name: 'Registered Users',
@@ -81,7 +78,6 @@ export const DashboardPage: React.FC = () => {
       icon: Users,
       color: 'text-rose-600',
       bg: 'bg-rose-100',
-      change: '+12 new',
     },
   ];
 
@@ -143,10 +139,6 @@ export const DashboardPage: React.FC = () => {
                 <p className="text-xl font-black text-slate-900 mt-0.5">{stat.value}</p>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full flex items-center gap-0.5">
-              <TrendingUp className="w-3 h-3" />
-              {stat.change}
-            </span>
           </div>
         ))}
       </div>

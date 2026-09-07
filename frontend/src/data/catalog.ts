@@ -10,8 +10,6 @@ type CatalogDraft = {
   isFeatured?: boolean;
   categorySlug: string;
   image: string;
-  avgRating?: number;
-  reviewCount?: number;
 };
 
 export const LOCAL_CATEGORIES: Category[] = [
@@ -36,8 +34,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'mobiles',
     image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.6,
-    reviewCount: 1284,
   },
   {
     title: 'Pixel Lite 5G 128GB',
@@ -49,8 +45,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'mobiles',
     image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.4,
-    reviewCount: 612,
   },
   {
     title: 'Wireless Noise-Canceling Headphones',
@@ -62,8 +56,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'electronics',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.8,
-    reviewCount: 2104,
   },
   {
     title: 'UltraBook Air 13" Laptop',
@@ -75,8 +67,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'electronics',
     image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.5,
-    reviewCount: 890,
   },
   {
     title: '4K Streaming Stick',
@@ -88,8 +78,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'electronics',
     image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.3,
-    reviewCount: 3401,
   },
   {
     title: 'Portable Bluetooth Speaker Pro',
@@ -101,8 +89,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'electronics',
     image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.6,
-    reviewCount: 754,
   },
   {
     title: 'Mechanical RGB Keyboard',
@@ -113,8 +99,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 55,
     categorySlug: 'electronics',
     image: 'https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.7,
-    reviewCount: 431,
   },
   {
     title: 'Wireless Gaming Mouse',
@@ -125,8 +109,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 80,
     categorySlug: 'electronics',
     image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.5,
-    reviewCount: 988,
   },
   {
     title: 'Classic Urban Denim Jacket',
@@ -137,8 +119,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 50,
     categorySlug: 'fashion',
     image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.2,
-    reviewCount: 276,
   },
   {
     title: 'Everyday Cotton T-Shirt 3-Pack',
@@ -150,8 +130,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'fashion',
     image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.4,
-    reviewCount: 1560,
   },
   {
     title: 'Runner Pro Sneakers',
@@ -163,8 +141,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'fashion',
     image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.6,
-    reviewCount: 2201,
   },
   {
     title: 'Slim Fit Chino Pants',
@@ -175,8 +151,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 90,
     categorySlug: 'fashion',
     image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.1,
-    reviewCount: 344,
   },
   {
     title: 'Ergonomic Premium Leather Chair',
@@ -188,8 +162,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'home-living',
     image: 'https://images.unsplash.com/photo-1580481072645-022f9a6d8310?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.7,
-    reviewCount: 198,
   },
   {
     title: 'Modern Ambient Table Lamp',
@@ -200,8 +172,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 25,
     categorySlug: 'home-living',
     image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.3,
-    reviewCount: 167,
   },
   {
     title: 'Non-Stick Cookware Set 10pc',
@@ -213,8 +183,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'home-living',
     image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.5,
-    reviewCount: 802,
   },
   {
     title: 'Memory Foam Pillow Twin Pack',
@@ -225,8 +193,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 150,
     categorySlug: 'home-living',
     image: 'https://images.unsplash.com/photo-1584100936595-c8196c9db434?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.4,
-    reviewCount: 1190,
   },
   {
     title: 'Minimalist Smart Watch Series 5',
@@ -238,8 +204,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'accessories',
     image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.5,
-    reviewCount: 940,
   },
   {
     title: 'Leather Crossbody Bag',
@@ -250,8 +214,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 42,
     categorySlug: 'accessories',
     image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.3,
-    reviewCount: 255,
   },
   {
     title: 'UV Polarized Sunglasses',
@@ -263,8 +225,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'accessories',
     image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.2,
-    reviewCount: 670,
   },
   {
     title: 'Hydrating Face Serum 30ml',
@@ -276,8 +236,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'beauty',
     image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.6,
-    reviewCount: 1433,
   },
   {
     title: 'Matte Lip Color Set',
@@ -288,8 +246,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 75,
     categorySlug: 'beauty',
     image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.4,
-    reviewCount: 508,
   },
   {
     title: 'Yoga Mat Extra Thick 8mm',
@@ -300,8 +256,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 95,
     categorySlug: 'sports',
     image: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.5,
-    reviewCount: 721,
   },
   {
     title: 'Adjustable Dumbbell 25kg Pair',
@@ -313,8 +267,6 @@ const DRAFTS: CatalogDraft[] = [
     isFeatured: true,
     categorySlug: 'sports',
     image: 'https://images.unsplash.com/photo-1576678927484-8c612e0d0c0e?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.7,
-    reviewCount: 389,
   },
   {
     title: 'Organic Coffee Beans 1kg',
@@ -325,8 +277,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 140,
     categorySlug: 'groceries',
     image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.8,
-    reviewCount: 2011,
   },
   {
     title: 'Extra Virgin Olive Oil 1L',
@@ -337,8 +287,6 @@ const DRAFTS: CatalogDraft[] = [
     stock: 160,
     categorySlug: 'groceries',
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80',
-    avgRating: 4.5,
-    reviewCount: 844,
   },
 ];
 
@@ -495,8 +443,6 @@ function extraDrafts(): CatalogDraft[] {
 
       const imgKey = imgs[i % imgs.length] ?? `photo-1505740420928-5e560c06d30e`;
       const desc = descs[Math.floor(r4 * descs.length)];
-      const avgRating = Math.round((3.5 + r5 * 1.5) * 10) / 10;
-      const reviewCount = Math.floor(seededRand(seed + 5) * 3000);
       const stock = Math.floor(seededRand(seed + 6) * 150) + 5;
 
       result.push({
@@ -509,8 +455,6 @@ function extraDrafts(): CatalogDraft[] {
         isFeatured: i % 7 === 0,
         categorySlug: category.slug,
         image: `https://images.unsplash.com/${imgKey}?auto=format&fit=crop&w=800&q=80`,
-        avgRating,
-        reviewCount,
       });
     }
   }
@@ -538,8 +482,6 @@ function toProduct(draft: CatalogDraft): Product {
     categoryId: category.id,
     category,
     images: [{ id: `${draft.slug}-img`, url: draft.image, isPrimary: true }],
-    avgRating: draft.avgRating ?? 4.4,
-    reviewCount: draft.reviewCount ?? 120,
     createdAt: now,
     updatedAt: now,
   };

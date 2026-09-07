@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/useCartStore';
 import { useAuthStore } from '../stores/useAuthStore';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { formatCurrency } from '../utils/formatters';
-import { ShieldCheck, ArrowRight, Lock } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Lock, AlertCircle, CreditCard, Banknote } from 'lucide-react';
 import apiClient from '../services/apiClient';
 import { BackButton } from '../components/common/BackButton';
 
@@ -25,6 +25,7 @@ export const CheckoutPage: React.FC = () => {
     postalCode: '',
     country: 'US'
   });
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'cod'>('card');
   const [errorMsg, setErrorMsg] = useState('');
 
   if (items.length === 0) {
@@ -47,13 +48,19 @@ export const CheckoutPage: React.FC = () => {
     setErrorMsg('');
     
     try {
+      await cartStore.syncWithBackend();
+      
+      const syncedItems = cartStore.items;
+      if (syncedItems.length === 0) {
+        setErrorMsg('Your cart is empty or all items are currently unavailable.');
+        return;
+      }
+      
       const orderPayload = {
         address,
-        items: items.map(i => ({ productId: i.product.id, quantity: i.quantity, price: i.product.discountPrice ?? i.product.price })),
-        totalAmount: cartStore.getSubtotal(),
-        discountAmount: cartStore.getDiscount(),
-        finalAmount: cartStore.getTotal(),
-        couponCode: cartStore.coupon?.code
+        items: syncedItems.map(i => ({ productId: i.product.id, quantity: i.quantity })),
+        couponCode: cartStore.coupon?.code,
+        paymentMethod
       };
       
       const orderRes = await apiClient.post('/orders', orderPayload);
@@ -62,6 +69,11 @@ export const CheckoutPage: React.FC = () => {
       if (!orderId) throw new Error('Failed to create order record');
       
       cartStore.clearCart();
+
+      if (paymentMethod === 'cod') {
+        navigate('/orders?success=true');
+        return;
+      }
 
       const payRes = await apiClient.post('/payments/create', { orderId });
       const checkoutUrl = payRes.data?.data?.url;
@@ -99,6 +111,36 @@ export const CheckoutPage: React.FC = () => {
             <Input label="Postal/Zip Code" required value={address.postalCode} onChange={e => setAddress({...address, postalCode: e.target.value})} />
             <Input label="Country" required value={address.country} onChange={e => setAddress({...address, country: e.target.value})} />
           </div>
+
+          <div className="space-y-2 pt-2">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Payment Method</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('card')}
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 text-xs font-bold transition-all ${
+                  paymentMethod === 'card'
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                }`}
+              >
+                <CreditCard className="w-4 h-4" />
+                Pay with Card
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('cod')}
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 text-xs font-bold transition-all ${
+                  paymentMethod === 'cod'
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                }`}
+              >
+                <Banknote className="w-4 h-4" />
+                Cash on Delivery
+              </button>
+            </div>
+          </div>
         </form>
       </div>
 
@@ -129,10 +171,9 @@ export const CheckoutPage: React.FC = () => {
           className="w-full mt-8" 
           size="lg" 
           isLoading={isProcessing}
-          leftIcon={<Lock className="w-4 h-4" />}
-          rightIcon={<ArrowRight className="w-4 h-4" />}
+          leftIcon={paymentMethod === 'cod' ? <Banknote className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
         >
-          Proceed to Payment
+          {paymentMethod === 'cod' ? 'Place Order (Cash on Delivery)' : 'Pay Now'}
         </Button>
         <p className="text-xs text-center text-slate-400 mt-4 flex items-center justify-center gap-1.5 font-medium">
           <ShieldCheck className="w-4 h-4" /> Secure SSL Encrypted Checkout via Stripe

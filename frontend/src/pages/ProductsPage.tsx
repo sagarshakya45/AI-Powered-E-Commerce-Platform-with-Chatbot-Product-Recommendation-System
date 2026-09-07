@@ -107,7 +107,7 @@ export const ProductsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <BackButton to="/" label="Home" />
+        <BackButton label="Back" />
         <div className="bg-white px-4 py-2.5 rounded-xl border border-slate-200/80 shadow-sm">
           <div className="text-xs font-semibold text-slate-600">
             {search ? (

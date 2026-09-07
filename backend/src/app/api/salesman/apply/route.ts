@@ -10,7 +10,14 @@ export async function GET(req: NextRequest) {
     }
 
     const application = await SalesmanService.getApplicationStatus(user.id);
-    return NextResponse.json({ success: true, statusCode: 200, data: { application } });
+    return NextResponse.json({ 
+      success: true, 
+      statusCode: 200, 
+      data: { 
+        application,
+        userRole: user.role 
+      } 
+    });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 500, message: error.message || 'Failed to fetch status' },

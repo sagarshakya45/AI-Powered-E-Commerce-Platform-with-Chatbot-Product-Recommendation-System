@@ -246,6 +246,7 @@ model Order {
   discountAmount Float       @default(0)
   finalAmount    Float
   status         OrderStatus @default(PENDING)
+  paymentMethod  String      @default("card")
   couponId       String?
   coupon         Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
   createdAt      DateTime    @default(now())

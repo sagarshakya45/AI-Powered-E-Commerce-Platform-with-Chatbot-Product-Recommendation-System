@@ -22,6 +22,7 @@ export const AdminSalesmanPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-salesman-apps'] });
       queryClient.invalidateQueries({ queryKey: ['admin-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['salesman-status'] });
     },
   });
 

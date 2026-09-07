@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BadgeCheck, Building2, Phone, FileText, Send, Clock, CheckCircle2, XCircle, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -17,10 +17,13 @@ export const SalesmanApplyPage: React.FC = () => {
     queryKey: ['salesman-status'],
     queryFn: async () => {
       const res = await apiClient.get('/salesman/apply');
-      return res.data?.data?.application;
+      return res.data?.data || {};
     },
     enabled: !!user,
   });
+
+  const application = applicationData?.application || null;
+  const userRole = applicationData?.userRole;
 
   const applyMutation = useMutation({
     mutationFn: async (payload: any) => {
@@ -41,6 +44,12 @@ export const SalesmanApplyPage: React.FC = () => {
     applyMutation.mutate({ businessName, phoneNumber, reason });
   };
 
+  useEffect(() => {
+    if (application?.status === 'APPROVED' && userRole === 'SALESMAN') {
+      useAuthStore.getState().checkAuth();
+    }
+  }, [application?.status, userRole]);
+
   if (!user) {
     return (
       <div className="max-w-md mx-auto py-16 text-center space-y-4">
@@ -56,7 +65,7 @@ export const SalesmanApplyPage: React.FC = () => {
     );
   }
 
-  const app = applicationData;
+  const app = application;
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-8">
