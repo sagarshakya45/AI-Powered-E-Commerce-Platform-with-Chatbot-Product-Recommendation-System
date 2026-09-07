@@ -13,11 +13,11 @@ export class AppError extends Error {
   }
 }
 
-export function handleControllerError(error: unknown) {
+export function handleControllerError(error: unknown, headers: HeadersInit = {}) {
   console.error('[API Error]:', error);
 
   if (error instanceof AppError) {
-    return ApiResponse.error(error.message, error.statusCode, error.errors);
+    return ApiResponse.error(error.message, error.statusCode, error.errors, headers);
   }
 
   if (error instanceof ZodError) {
@@ -25,9 +25,9 @@ export function handleControllerError(error: unknown) {
       field: e.path.join('.'),
       message: e.message,
     }));
-    return ApiResponse.error('Validation failed', 400, formattedErrors);
+    return ApiResponse.error('Validation failed', 400, formattedErrors, headers);
   }
 
   const message = error instanceof Error ? error.message : 'Internal Server Error';
-  return ApiResponse.error(message, 500);
+  return ApiResponse.error(message, 500, [], headers);
 }

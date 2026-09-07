@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma';
+import { AppError } from '../utils/errorHandler';
 
 export class CartRepository {
   static async getOrCreateCart(userId: string) {
@@ -40,6 +41,19 @@ export class CartRepository {
   }
 
   static async addItem(userId: string, productId: string, quantity: number) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true, stock: true, isActive: true },
+    });
+
+    if (!product || !product.isActive) {
+      throw new AppError('Product not found or unavailable', 404);
+    }
+
+    if (product.stock < quantity) {
+      throw new AppError(`Only ${product.stock} items available in stock`, 400);
+    }
+
     const cart = await this.getOrCreateCart(userId);
 
     const existingItem = await prisma.cartItem.findUnique({
@@ -52,9 +66,13 @@ export class CartRepository {
     });
 
     if (existingItem) {
+      const newQuantity = existingItem.quantity + quantity;
+      if (newQuantity > product.stock) {
+        throw new AppError(`Only ${product.stock} items available in stock`, 400);
+      }
       await prisma.cartItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + quantity },
+        data: { quantity: newQuantity },
       });
     } else {
       await prisma.cartItem.create({
@@ -116,22 +134,29 @@ export class CartRepository {
     const cart = await this.getOrCreateCart(userId);
 
     for (const item of items) {
-      await prisma.cartItem.upsert({
+      const existingItem = await prisma.cartItem.findUnique({
         where: {
           cartId_productId: {
             cartId: cart.id,
             productId: item.productId,
           },
         },
-        update: {
-          quantity: item.quantity,
-        },
-        create: {
-          cartId: cart.id,
-          productId: item.productId,
-          quantity: item.quantity,
-        },
       });
+
+      if (existingItem) {
+        await prisma.cartItem.update({
+          where: { id: existingItem.id },
+          data: { quantity: existingItem.quantity + item.quantity },
+        });
+      } else {
+        await prisma.cartItem.create({
+          data: {
+            cartId: cart.id,
+            productId: item.productId,
+            quantity: item.quantity,
+          },
+        });
+      }
     }
 
     return this.getOrCreateCart(userId);

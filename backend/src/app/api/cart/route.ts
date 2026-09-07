@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const result = await CartService.getUserCart(user.id);
     return ApiResponse.success(result, 'Cart retrieved successfully', 200, corsHeaders);
   } catch (error) {
-    return handleControllerError(error);
+    return handleControllerError(error, corsHeaders);
   }
 }
 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const result = await CartService.addItemToCart(user.id, productId, quantity);
     return ApiResponse.success(result, 'Cart updated successfully', 200, corsHeaders);
   } catch (error) {
-    return handleControllerError(error);
+    return handleControllerError(error, corsHeaders);
   }
 }
 
@@ -51,6 +51,6 @@ export async function DELETE(req: NextRequest) {
     const result = await CartService.clearCart(user.id);
     return ApiResponse.success(result, 'Cart cleared successfully', 200, corsHeaders);
   } catch (error) {
-    return handleControllerError(error);
+    return handleControllerError(error, corsHeaders);
   }
 }

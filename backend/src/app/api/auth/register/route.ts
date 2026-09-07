@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, generateAccessToken, generateRefreshToken, createCookieHeader } from '@/utils/auth';
 import { registerSchema } from '@/validators/authValidator';
+import { corsHeaders, handleOptions } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +24,7 @@ export async function POST(req: NextRequest) {
             message: err.message,
           })),
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -36,7 +41,7 @@ export async function POST(req: NextRequest) {
           statusCode: 409,
           message: 'Email address is already registered',
         },
-        { status: 409 }
+        { status: 409, headers: corsHeaders }
       );
     }
 
@@ -81,7 +86,7 @@ export async function POST(req: NextRequest) {
         message: 'Account created successfully',
         data: { user: userProfile },
       },
-      { status: 201 }
+      { status: 201, headers: corsHeaders }
     );
 
     response.headers.append(
@@ -101,7 +106,7 @@ export async function POST(req: NextRequest) {
         statusCode: 500,
         message: error.message || 'Internal server error during registration',
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

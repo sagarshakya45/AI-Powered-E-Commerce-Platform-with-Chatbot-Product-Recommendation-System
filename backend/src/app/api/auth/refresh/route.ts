@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyRefreshToken, generateAccessToken, createCookieHeader } from '@/utils/auth';
+import { corsHeaders, handleOptions } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,7 +14,7 @@ export async function POST(req: NextRequest) {
     if (!refreshToken) {
       return NextResponse.json(
         { success: false, statusCode: 401, message: 'Refresh token missing' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -21,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (!savedToken || new Date() > savedToken.expiresAt) {
       return NextResponse.json(
         { success: false, statusCode: 401, message: 'Invalid or expired refresh token' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -36,7 +41,7 @@ export async function POST(req: NextRequest) {
       success: true,
       statusCode: 200,
       message: 'Access token refreshed successfully',
-    });
+    }, { headers: corsHeaders });
 
     response.headers.append(
       'Set-Cookie',
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 401, message: 'Token refresh failed' },
-      { status: 401 }
+      { status: 401, headers: corsHeaders }
     );
   }
 }

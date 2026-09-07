@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PaymentService } from '@/services/paymentService';
+import { corsHeaders, handleOptions } from '@/lib/cors';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy', {
   apiVersion: '2024-06-20' as any,
 });
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function POST(req: NextRequest) {
   const payload = await req.text();
@@ -20,13 +25,13 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET || 'dummy_webhook_secret'
     );
   } catch (err: any) {
-    return NextResponse.json({ success: false, message: err.message }, { status: 400 });
+    return NextResponse.json({ success: false, message: err.message }, { status: 400, headers: corsHeaders });
   }
 
   try {
     await PaymentService.handleWebhook(event);
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ received: true }, { headers: corsHeaders });
   } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message }, { status: 500, headers: corsHeaders });
   }
 }

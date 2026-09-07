@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/utils/auth';
+import { corsHeaders, handleOptions } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function GET(
   req: NextRequest,
@@ -25,7 +30,7 @@ export async function GET(
     if (!category) {
       return NextResponse.json(
         { success: false, statusCode: 404, message: 'Category not found' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -34,11 +39,11 @@ export async function GET(
       statusCode: 200,
       message: 'Category retrieved successfully',
       data: { category },
-    });
+    }, { headers: corsHeaders });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 500, message: error.message || 'Failed to fetch category' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
@@ -52,7 +57,7 @@ export async function PUT(
     if (!admin) {
       return NextResponse.json(
         { success: false, statusCode: 403, message: 'Forbidden: Admin access required' },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -64,7 +69,7 @@ export async function PUT(
     if (!existingCategory) {
       return NextResponse.json(
         { success: false, statusCode: 404, message: 'Category not found' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -81,11 +86,11 @@ export async function PUT(
       statusCode: 200,
       message: 'Category updated successfully',
       data: { category: updatedCategory },
-    });
+    }, { headers: corsHeaders });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 500, message: error.message || 'Failed to update category' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
@@ -99,7 +104,7 @@ export async function DELETE(
     if (!admin) {
       return NextResponse.json(
         { success: false, statusCode: 403, message: 'Forbidden: Admin access required' },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -109,7 +114,7 @@ export async function DELETE(
     if (!existingCategory) {
       return NextResponse.json(
         { success: false, statusCode: 404, message: 'Category not found' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -119,11 +124,11 @@ export async function DELETE(
       success: true,
       statusCode: 200,
       message: 'Category deleted successfully',
-    });
+    }, { headers: corsHeaders });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 500, message: error.message || 'Failed to delete category' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

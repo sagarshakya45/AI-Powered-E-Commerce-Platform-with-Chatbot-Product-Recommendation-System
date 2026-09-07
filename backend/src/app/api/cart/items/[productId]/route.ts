@@ -27,7 +27,7 @@ export async function PUT(
     const result = await CartService.updateCartItemQuantity(user.id, productId, quantity);
     return ApiResponse.success(result, 'Cart item updated successfully', 200, corsHeaders);
   } catch (error) {
-    return handleControllerError(error);
+    return handleControllerError(error, corsHeaders);
   }
 }
 
@@ -46,6 +46,6 @@ export async function DELETE(
     const result = await CartService.removeCartItem(user.id, productId);
     return ApiResponse.success(result, 'Cart item removed successfully', 200, corsHeaders);
   } catch (error) {
-    return handleControllerError(error);
+    return handleControllerError(error, corsHeaders);
   }
 }

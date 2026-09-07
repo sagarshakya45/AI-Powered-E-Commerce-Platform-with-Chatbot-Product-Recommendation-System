@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AIService } from '@/services/ai.service';
 import { requireAdmin } from '@/utils/auth';
+import { corsHeaders, handleOptions } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,7 +13,7 @@ export async function POST(req: NextRequest) {
     if (!admin) {
       return NextResponse.json(
         { success: false, statusCode: 403, message: 'Forbidden: Admin access required' },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -18,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (!title || !category || !features || !Array.isArray(features)) {
       return NextResponse.json(
         { success: false, statusCode: 400, message: 'Title, category, and features array are required' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -28,11 +33,11 @@ export async function POST(req: NextRequest) {
       success: true,
       statusCode: 200,
       data: { description }
-    });
+    }, { headers: corsHeaders });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 500, message: error.message || 'Failed to generate description' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

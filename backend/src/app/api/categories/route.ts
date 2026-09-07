@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/utils/auth';
+import { corsHeaders, handleOptions } from '@/lib/cors';
 
 const generateSlug = (text: string) => {
   return text
@@ -11,6 +12,10 @@ const generateSlug = (text: string) => {
     .replace(/[^\w\-]+/g, '')
     .replace(/\-\-+/g, '-');
 };
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function GET() {
   try {
@@ -28,7 +33,7 @@ export async function GET() {
       statusCode: 200,
       message: 'Categories fetched successfully',
       data: { categories },
-    });
+    }, { headers: corsHeaders });
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -36,7 +41,7 @@ export async function GET() {
         statusCode: 500,
         message: error.message || 'Failed to fetch categories',
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
     if (!admin) {
       return NextResponse.json(
         { success: false, statusCode: 403, message: 'Forbidden: Admin access required' },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -57,7 +62,7 @@ export async function POST(req: NextRequest) {
     if (!name) {
       return NextResponse.json(
         { success: false, statusCode: 400, message: 'Category name is required' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -70,7 +75,7 @@ export async function POST(req: NextRequest) {
     if (existingCategory) {
       return NextResponse.json(
         { success: false, statusCode: 409, message: 'Category name or slug already exists' },
-        { status: 409 }
+        { status: 409, headers: corsHeaders }
       );
     }
 
@@ -85,12 +90,12 @@ export async function POST(req: NextRequest) {
         message: 'Category created successfully',
         data: { category },
       },
-      { status: 201 }
+      { status: 201, headers: corsHeaders }
     );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, statusCode: 500, message: error.message || 'Failed to create category' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

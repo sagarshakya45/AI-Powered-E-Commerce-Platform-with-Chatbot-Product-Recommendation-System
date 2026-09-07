@@ -13,7 +13,7 @@ export class ApiResponse {
     return NextResponse.json(body, { status: statusCode, headers });
   }
 
-  static error(message = 'An error occurred', statusCode = 500, errors: any[] = []) {
+  static error(message = 'An error occurred', statusCode = 500, errors: any[] = [], headers: HeadersInit = {}) {
     const body: ApiResponseFormat = {
       success: false,
       statusCode,
@@ -21,6 +21,6 @@ export class ApiResponse {
       errors: errors.length > 0 ? errors : undefined,
       timestamp: new Date().toISOString(),
     };
-    return NextResponse.json(body, { status: statusCode });
+    return NextResponse.json(body, { status: statusCode, headers });
   }
 }

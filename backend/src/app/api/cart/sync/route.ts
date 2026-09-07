@@ -24,6 +24,6 @@ export async function POST(req: NextRequest) {
     const result = await CartService.syncCart(user.id, items);
     return ApiResponse.success(result, 'Cart synchronized successfully', 200, corsHeaders);
   } catch (error) {
-    return handleControllerError(error);
+    return handleControllerError(error, corsHeaders);
   }
 }
