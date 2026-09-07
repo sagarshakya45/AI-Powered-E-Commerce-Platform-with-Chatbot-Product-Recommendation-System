@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { comparePassword, generateAccessToken, generateRefreshToken, createCookieHeader } from '@/utils/auth';
 import { loginSchema } from '@/validators/authValidator';
 import { getCorsHeaders } from '@/lib/cors';
+import { checkRateLimit, getClientIp } from '@/utils/rateLimiter';
 
 export async function OPTIONS(req: NextRequest) {
   return new Response(null, { status: 204, headers: getCorsHeaders(req.headers.get('origin')) });
@@ -11,6 +12,14 @@ export async function OPTIONS(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const origin = req.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
+
+  if (!checkRateLimit(getClientIp(req))) {
+    return NextResponse.json(
+      { success: false, statusCode: 429, message: 'Too many login attempts. Please try again later.' },
+      { status: 429, headers: corsHeaders }
+    );
+  }
+
   try {
     const body = await req.json();
 

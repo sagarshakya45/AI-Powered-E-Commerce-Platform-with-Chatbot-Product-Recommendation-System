@@ -3,12 +3,20 @@ import { prisma } from '@/lib/prisma';
 import { hashPassword, generateAccessToken, generateRefreshToken, createCookieHeader } from '@/utils/auth';
 import { registerSchema } from '@/validators/authValidator';
 import { corsHeaders, handleOptions } from '@/lib/cors';
+import { checkRateLimit, getClientIp } from '@/utils/rateLimiter';
 
 export async function OPTIONS() {
   return handleOptions();
 }
 
 export async function POST(req: NextRequest) {
+  if (!checkRateLimit(getClientIp(req))) {
+    return NextResponse.json(
+      { success: false, statusCode: 429, message: 'Too many registration attempts. Please try again later.' },
+      { status: 429, headers: corsHeaders }
+    );
+  }
+
   try {
     const body = await req.json();
 
