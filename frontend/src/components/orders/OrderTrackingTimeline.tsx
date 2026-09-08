@@ -1,12 +1,20 @@
 import React from 'react';
 import { CheckCircle2, Clock, Truck, Home, AlertCircle } from 'lucide-react';
 
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'PROCESSING'
+  | 'SHIPPED'
+  | 'OUT_FOR_DELIVERY'
+  | 'DELIVERED'
+  | 'CANCELLED';
 
 const STEPS: { status: OrderStatus; label: string; icon: React.ReactNode }[] = [
   { status: 'CONFIRMED', label: 'Order Placed', icon: <CheckCircle2 className="w-4 h-4" /> },
   { status: 'PROCESSING', label: 'Processing', icon: <Clock className="w-4 h-4" /> },
-  { status: 'SHIPPED', label: 'Out for Delivery', icon: <Truck className="w-4 h-4" /> },
+  { status: 'SHIPPED', label: 'Shipped', icon: <Truck className="w-4 h-4" /> },
+  { status: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', icon: <Truck className="w-4 h-4" /> },
   { status: 'DELIVERED', label: 'Delivered', icon: <Home className="w-4 h-4" /> },
 ];
 
@@ -25,7 +33,8 @@ export const OrderTrackingTimeline: React.FC<{ status: OrderStatus }> = ({ statu
   if (status === 'PENDING' || status === 'CONFIRMED') currentIndex = 0;
   else if (status === 'PROCESSING') currentIndex = 1;
   else if (status === 'SHIPPED') currentIndex = 2;
-  else if (status === 'DELIVERED') currentIndex = 3;
+  else if (status === 'OUT_FOR_DELIVERY') currentIndex = 3;
+  else if (status === 'DELIVERED') currentIndex = 4;
 
   return (
     <div className="py-4 space-y-3">

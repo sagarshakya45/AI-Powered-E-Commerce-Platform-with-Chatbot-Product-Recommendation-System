@@ -27,10 +27,12 @@ export const ProductRecommendations: React.FC = () => {
   // When API is offline/empty, fallback to local catalog sorted by rating desc
   const recommendations = useMemo(() => {
     if (apiRecs.length > 0) return apiRecs.slice(0, AI_COUNT);
-    return [...LOCAL_PRODUCTS]
-      .sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-      .slice(0, AI_COUNT);
+    return [...LOCAL_PRODUCTS].sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0)).slice(0, AI_COUNT);
   }, [apiRecs]);
+
+  // Cast to Product type for the card rendering
+  type TmpProduct = typeof recommendations[number];
+  const safeRecs: TmpProduct[] = recommendations;
 
   if (isLoading) {
     return (
@@ -68,7 +70,7 @@ export const ProductRecommendations: React.FC = () => {
 
       {/* Grid – 20 cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {recommendations.map((product: any) => {
+        {safeRecs.map((product) => {
           const primaryImg =
             product.images?.find((i: any) => i.isPrimary)?.url ||
             product.images?.[0]?.url ||

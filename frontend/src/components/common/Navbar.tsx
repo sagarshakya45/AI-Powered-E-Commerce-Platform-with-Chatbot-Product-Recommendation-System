@@ -10,6 +10,7 @@ import {
   X,
   LogOut,
   Shield,
+  Store,
   Zap,
   ChevronRight,
   Sun,
@@ -19,14 +20,14 @@ import { useAuthStore } from '../../stores/useAuthStore';
 import { useCartStore } from '../../stores/useCartStore';
 import { useWishlistStore } from '../../stores/useWishlistStore';
 import { useThemeStore } from '../../stores/useThemeStore';
-import { LOCAL_CATEGORIES, LOCAL_PRODUCTS } from '../../data/catalog';
 import { formatCurrency } from '../../utils/formatters';
 import apiClient from '../../services/apiClient';
 
 interface Suggestion {
   text: string;
-  type: 'search' | 'category' | 'keyword';
+  type: 'search' | 'category' | 'keyword' | 'product';
   slug?: string;
+  productId?: string;
 }
 
 export const Navbar: React.FC = () => {
@@ -59,31 +60,53 @@ export const Navbar: React.FC = () => {
       return;
     }
 
-    const lowerQ = q.toLowerCase();
-    const results: Suggestion[] = [];
+    let cancelled = false;
 
-    results.push({ text: `Search for "${q}"`, type: 'search' });
+    apiClient
+      .get('/search/autocomplete', { params: { q } })
+      .then((res) => {
+        if (cancelled) return;
+        const data = res.data?.data;
+        if (!data) {
+          setSuggestions([]);
+          return;
+        }
 
-    const matchedCategories = LOCAL_CATEGORIES.filter((c) =>
-      c.name.toLowerCase().includes(lowerQ) || c.slug.includes(lowerQ)
-    );
-    matchedCategories.forEach((c) => {
-      results.push({ text: `Category: ${c.name}`, type: 'category', slug: c.slug });
-    });
+        const results: Suggestion[] = [];
 
-    const titleWords = new Set<string>();
-    LOCAL_PRODUCTS.forEach((p) => {
-      const words = p.title.toLowerCase().split(/\s+/);
-      words.forEach((w) => {
-        if (w.length > 3 && w.includes(lowerQ) && !titleWords.has(w)) {
-          titleWords.add(w);
-          results.push({ text: w, type: 'keyword' });
+        results.push({ text: `Search for "${q}"`, type: 'search' });
+
+        if (data.products?.length > 0) {
+          data.products.forEach((p: any) => {
+            results.push({ text: p.title, type: 'product', productId: p.id, slug: p.slug });
+          });
+        }
+
+        if (data.categories?.length > 0) {
+          data.categories.forEach((c: any) => {
+            results.push({ text: c.name, type: 'category', slug: c.slug });
+          });
+        }
+
+        if (data.brands?.length > 0 && results.length < 8) {
+          data.brands.forEach((b: any) => {
+            results.push({ text: b, type: 'keyword' });
+          });
+        }
+
+        setSuggestions(results.slice(0, 8));
+        setShowDropdown(true);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSuggestions([{ text: `Search for "${q}"`, type: 'search' }]);
+          setShowDropdown(true);
         }
       });
-    });
 
-    setSuggestions(results.slice(0, 8));
-    setShowDropdown(true);
+    return () => {
+      cancelled = true;
+    };
   }, [debouncedQuery]);
 
   useEffect(() => {
@@ -125,7 +148,7 @@ export const Navbar: React.FC = () => {
     e.preventDefault();
     setShowDropdown(false);
     const q = query.trim();
-    navigate(q ? `/products?search=${encodeURIComponent(q)}` : '/products');
+    navigate(q ? `/search?q=${encodeURIComponent(q)}` : '/search');
     setMobileOpen(false);
   };
 
@@ -134,13 +157,15 @@ export const Navbar: React.FC = () => {
     if (suggestion.type === 'search') {
       const q = suggestion.text.replace(/^Search for "/, '').replace(/"$/, '');
       setQuery(q);
-      navigate(`/products?search=${encodeURIComponent(q)}`);
+      navigate(`/search?q=${encodeURIComponent(q)}`);
     } else if (suggestion.type === 'category' && suggestion.slug) {
       setQuery('');
-      navigate(`/products?category=${suggestion.slug}`);
+      navigate(`/search?category=${suggestion.slug}`);
+    } else if (suggestion.type === 'product' && suggestion.slug) {
+      navigate(`/products/${suggestion.slug}`);
     } else if (suggestion.type === 'keyword') {
       setQuery(suggestion.text);
-      navigate(`/products?search=${encodeURIComponent(suggestion.text)}`);
+      navigate(`/search?q=${encodeURIComponent(suggestion.text)}`);
     }
     setMobileOpen(false);
   };
@@ -230,7 +255,7 @@ export const Navbar: React.FC = () => {
                       </p>
                     </div>
                     <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
-                      {suggestion.type === 'search' ? 'Search' : suggestion.type === 'category' ? 'Category' : 'Keyword'}
+                      {suggestion.type === 'search' ? 'Search' : suggestion.type === 'category' ? 'Category' : suggestion.type === 'product' ? 'Product' : 'Keyword'}
                     </span>
                   </div>
                 ))}
@@ -248,6 +273,15 @@ export const Navbar: React.FC = () => {
                   >
                     <Shield className="w-3.5 h-3.5" />
                     Admin
+                  </Link>
+                )}
+                {user?.role === 'SALESMAN' && (
+                  <Link
+                    to="/seller"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white border border-transparent hover:from-violet-500 hover:to-indigo-500 transition-colors"
+                  >
+                    <Store className="w-3.5 h-3.5" />
+                    Seller Dashboard
                   </Link>
                 )}
                 <Link

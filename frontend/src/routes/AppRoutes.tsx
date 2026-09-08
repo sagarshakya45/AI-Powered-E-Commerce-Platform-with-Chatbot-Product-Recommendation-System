@@ -4,6 +4,7 @@ import { MainLayout } from '../layouts/MainLayout';
 import { AuthLayout } from '../layouts/AuthLayout';
 import { HomePage } from '../pages/HomePage';
 import { ProductsPage } from '../pages/ProductsPage';
+import { SearchPage } from '../pages/SearchPage';
 import { ProductDetailPage } from '../pages/ProductDetailPage';
 import { CartPage } from '../pages/CartPage';
 import { LoginPage } from '../pages/LoginPage';
@@ -14,6 +15,13 @@ import { CheckoutPage } from '../pages/CheckoutPage';
 import { OrdersPage } from '../pages/OrdersPage';
 import { AddressesPage } from '../pages/AddressesPage';
 import { SalesmanApplyPage } from '../pages/SalesmanApplyPage';
+import { SellerRoute } from './SellerRoute';
+import { SellerLayout } from '../layouts/SellerLayout';
+import { SellerDashboardPage } from '../pages/seller/DashboardPage';
+import { SellerProductsPage } from '../pages/seller/ProductsPage';
+import { SellerOrdersPage } from '../pages/seller/OrdersPage';
+import { SellerAnalyticsPage } from '../pages/seller/AnalyticsPage';
+import { SellerStorePage } from '../pages/seller/StorePage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
 import { AdminLayout } from '../layouts/AdminLayout';
@@ -32,8 +40,9 @@ export const AppRoutes: React.FC = () => {
       {/* Main App Layout */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:id" element={<ProductDetailPage />} />
+         <Route path="/products" element={<ProductsPage />} />
+         <Route path="/search" element={<SearchPage />} />
+         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         
@@ -50,6 +59,17 @@ export const AppRoutes: React.FC = () => {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/addresses" element={<AddressesPage />} />
           <Route path="/apply-salesman" element={<SalesmanApplyPage />} />
+        </Route>
+
+        {/* Seller Routes */}
+        <Route element={<SellerRoute />}>
+          <Route element={<SellerLayout />}>
+            <Route path="/seller" element={<SellerDashboardPage />} />
+            <Route path="/seller/products" element={<SellerProductsPage />} />
+            <Route path="/seller/orders" element={<SellerOrdersPage />} />
+            <Route path="/seller/analytics" element={<SellerAnalyticsPage />} />
+            <Route path="/seller/store" element={<SellerStorePage />} />
+          </Route>
         </Route>
       </Route>
 

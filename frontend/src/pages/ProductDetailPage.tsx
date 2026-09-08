@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, ChevronLeft, Truck, ShieldCheck, RefreshCw, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Star, ChevronLeft, Truck, ShieldCheck, RefreshCw, AlertCircle, Eye, Package } from 'lucide-react';
 import { useGetProductDetails } from '../hooks/useProducts';
 import { useCartStore } from '../stores/useCartStore';
+import { productService } from '../services/productService';
 import { formatCurrency, calculateDiscountPercentage } from '../utils/formatters';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -12,6 +13,13 @@ export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: product, isLoading, isError, error, refetch } = useGetProductDetails(id || '');
   const addItem = useCartStore((state) => state.addItem);
+
+  // Record a product view when the product loads
+  useEffect(() => {
+    if (product?.id) {
+      productService.recordView(product.id).catch(() => {});
+    }
+  }, [product?.id]);
 
   if (isLoading) {
     return (
@@ -123,6 +131,32 @@ export const ProductDetailPage: React.FC = () => {
             </div>
 
             <p className="text-sm text-slate-600 leading-relaxed">{product.description}</p>
+
+            {product.seller && (
+              <div className="flex items-center gap-3 pt-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                  {product.seller?.name?.[0]?.toUpperCase() || 'S'}
+                </div>
+                <div>
+                  <span className="text-xs text-slate-500">Sold by</span>
+                  <p className="font-bold text-xs text-slate-900">{product.seller?.name}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-4 pt-1 text-xs text-slate-400">
+              <span className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                {product.views} views
+              </span>
+              <span className="flex items-center gap-1">
+                <Package className="w-3 h-3" />
+                {product.stock} in stock
+              </span>
+              {product.sku && (
+                <span>SKU: {product.sku}</span>
+              )}
+            </div>
           </div>
 
           <div className="space-y-4 pt-4 border-t border-slate-100">

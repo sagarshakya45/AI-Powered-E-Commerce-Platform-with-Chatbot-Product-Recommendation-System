@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User } from '../types';
+import { User, Role } from '../types';
 import { authService } from '../services/authService';
 import { LoginFormData, RegisterFormData } from '../utils/validators';
 import { useCartStore } from './useCartStore';

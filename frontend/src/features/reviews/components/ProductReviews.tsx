@@ -13,6 +13,7 @@ export const ProductReviews: React.FC<{ productId: string }> = ({ productId }) =
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [title, setTitle] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -34,7 +35,7 @@ export const ProductReviews: React.FC<{ productId: string }> = ({ productId }) =
   });
 
   const submitReview = useMutation({
-    mutationFn: async (payload: { productId: string; rating: number; comment: string }) => {
+    mutationFn: async (payload: { productId: string; rating: number; title: string; comment: string }) => {
       const res = await apiClient.post('/reviews', payload);
       return res.data;
     },
@@ -42,6 +43,7 @@ export const ProductReviews: React.FC<{ productId: string }> = ({ productId }) =
       queryClient.invalidateQueries({ queryKey: ['reviews', productId] });
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
       setComment('');
+      setTitle('');
       setRating(5);
       setErrorMsg('');
       setSuccessMsg('Review submitted successfully! Thank you.');
@@ -61,7 +63,7 @@ export const ProductReviews: React.FC<{ productId: string }> = ({ productId }) =
       setErrorMsg('You must be logged in to leave a review.');
       return;
     }
-    submitReview.mutate({ productId, rating, comment });
+       submitReview.mutate({ productId, rating, comment, title });
   };
 
   const reviews = data?.reviews || [];
@@ -245,6 +247,19 @@ export const ProductReviews: React.FC<{ productId: string }> = ({ productId }) =
                 </div>
 
                 {/* Review Textarea */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Review Title (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="E.g. Best purchase I've made this year"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-3 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500 transition-colors"
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
                     Your Review Comment

@@ -129,21 +129,23 @@ export const OrdersPage: React.FC = () => {
                     item.product?.images?.[0]?.url ||
                     'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=200&q=80';
                   return (
-                    <div key={item.id} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl p-1 shrink-0 overflow-hidden">
-                          <img src={img} alt={item.product?.title} className="w-full h-full object-contain" />
-                        </div>
-                        <div className="min-w-0">
-                          <Link
-                            to={`/products/${item.product?.id}`}
-                            className="font-bold text-xs text-slate-900 hover:text-violet-600 truncate block"
-                          >
-                            {item.product?.title || 'Product Item'}
-                          </Link>
-                          <p className="text-[11px] text-slate-400 font-medium mt-0.5">Qty: {item.quantity}</p>
-                        </div>
-                      </div>
+                     <div key={item.id} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                       <div className="flex items-center gap-3.5 min-w-0">
+                         <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl p-1 shrink-0 overflow-hidden">
+                           <img src={img} alt={item.product?.title} className="w-full h-full object-contain" />
+                         </div>
+                         <div className="min-w-0">
+                           <Link
+                             to={`/products/${item.product?.id}`}
+                             className="font-bold text-xs text-slate-900 hover:text-violet-600 truncate block"
+                           >
+                             {item.product?.title || 'Product Item'}
+                           </Link>
+                           <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                             {item.seller?.name ? `Sold by ${item.seller.name}` : `Qty: ${item.quantity}`}
+                           </p>
+                         </div>
+                       </div>
                       <div className="font-black text-xs text-slate-900 shrink-0">
                         {formatCurrency(item.totalPrice)}
                       </div>
