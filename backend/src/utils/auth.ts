@@ -80,3 +80,11 @@ export async function requireAdmin(req: NextRequest) {
   }
   return user;
 }
+
+export async function requireSalesman(req: NextRequest) {
+  const user = await authenticateUser(req);
+  if (!user || user.role !== 'SALESMAN') {
+    return null;
+  }
+  return user;
+}

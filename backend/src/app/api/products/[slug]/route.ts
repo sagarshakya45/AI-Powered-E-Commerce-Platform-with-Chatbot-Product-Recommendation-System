@@ -5,6 +5,7 @@ import { updateProductSchema } from '@/validators/productValidator';
 import { ProductService } from '@/services/productService';
 import { handleOptions, corsHeaders } from '@/lib/cors';
 import { requireAdmin } from '@/utils/auth';
+import { authenticateUser } from '@/utils/auth';
 
 export async function OPTIONS() {
   return handleOptions();
@@ -17,7 +18,6 @@ export async function GET(
   try {
     const { slug } = params;
 
-    // Call service layer
     const product = await ProductService.getProductBySlugOrId(slug);
 
     return ApiResponse.success({ product }, 'Product details retrieved successfully', 200, corsHeaders);
@@ -31,9 +31,13 @@ export async function PUT(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const admin = await requireAdmin(req);
-    if (!admin) {
-      return ApiResponse.error('Admin access required', 403, [], corsHeaders);
+    const user = await authenticateUser(req);
+    if (!user) {
+      return ApiResponse.error('Authentication required', 401, [], corsHeaders);
+    }
+
+    if (user.role !== 'ADMIN' && user.role !== 'SALESMAN') {
+      return ApiResponse.error('Admin or seller access required', 403, [], corsHeaders);
     }
 
     const { slug } = params;
@@ -41,7 +45,9 @@ export async function PUT(
 
     const validatedData = updateProductSchema.parse(body);
 
-    const product = await ProductService.updateProduct(slug, validatedData);
+    const sellerId = user.role === 'SALESMAN' ? user.id : undefined;
+
+    const product = await ProductService.updateProduct(slug, validatedData, sellerId);
 
     return ApiResponse.success({ product }, 'Product updated successfully', 200, corsHeaders);
   } catch (error) {
@@ -54,14 +60,19 @@ export async function DELETE(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const admin = await requireAdmin(req);
-    if (!admin) {
-      return ApiResponse.error('Admin access required', 403, [], corsHeaders);
+    const user = await authenticateUser(req);
+    if (!user) {
+      return ApiResponse.error('Authentication required', 401, [], corsHeaders);
+    }
+
+    if (user.role !== 'ADMIN' && user.role !== 'SALESMAN') {
+      return ApiResponse.error('Admin or seller access required', 403, [], corsHeaders);
     }
 
     const { slug } = params;
 
-    const result = await ProductService.deleteProduct(slug);
+    const sellerId = user.role === 'SALESMAN' ? user.id : undefined;
+    const result = await ProductService.deleteProduct(slug, sellerId);
 
     return ApiResponse.success(result, 'Product deleted successfully', 200, corsHeaders);
   } catch (error) {

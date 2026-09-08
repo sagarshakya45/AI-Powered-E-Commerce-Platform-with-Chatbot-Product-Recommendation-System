@@ -13,38 +13,47 @@ export class ProductRepository {
       maxPrice,
       minRating,
       brand,
+      sellerId,
       inStock,
       isFeatured,
+      isActive,
+      isApproved,
       sort,
     } = params;
 
-    const where: any = { isActive: true };
+    const where: any = {};
 
-    // Search filter
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    } else {
+      where.isActive = true;
+    }
+
+    if (isApproved !== undefined) {
+      where.isApproved = isApproved;
+    } else {
+      where.isApproved = true;
+    }
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
+        { brand: { equals: search, mode: 'insensitive' } },
+        { sku: { equals: search, mode: 'insensitive' } },
       ];
     }
 
-    // Brand filter
     if (brand) {
-      const brandCondition = {
-        OR: [
-          { title: { contains: brand, mode: 'insensitive' } },
-          { description: { contains: brand, mode: 'insensitive' } },
-        ],
-      };
+      const brandCondition = { brand: { equals: brand, mode: 'insensitive' } };
       if (where.OR) {
         where.AND = [{ OR: where.OR }, brandCondition];
         delete where.OR;
       } else {
-        where.OR = brandCondition.OR;
+        where.OR = [brandCondition];
       }
     }
 
-    // Category filter
     if (categoryId) {
       where.categoryId = categoryId;
     } else if (category) {
@@ -57,26 +66,28 @@ export class ProductRepository {
       };
     }
 
-    // Featured filter
     if (isFeatured !== undefined) {
       where.isFeatured = isFeatured;
     }
 
-    // Price filter
     if (minPrice !== undefined || maxPrice !== undefined) {
       where.price = {};
       if (minPrice !== undefined) where.price.gte = minPrice;
       if (maxPrice !== undefined) where.price.lte = maxPrice;
     }
 
-    // Stock filter
     if (inStock === true) {
       where.stock = { gt: 0 };
     } else if (inStock === false) {
       where.stock = { equals: 0 };
     }
 
-    // Sorting
+    if (sellerId) {
+      where.sellerId = sellerId;
+    }
+
+    const skip = (page - 1) * limit;
+
     let orderBy: any = { createdAt: 'desc' };
     switch (sort) {
       case 'price_asc':
@@ -94,13 +105,23 @@ export class ProductRepository {
       case 'title_desc':
         orderBy = { title: 'desc' };
         break;
-      case 'createdAt_desc':
+      case 'best_selling':
+        orderBy = { salesCount: 'desc' };
+        break;
+      case 'highest_discount':
+        orderBy = { discountPrice: 'desc', price: 'asc' };
+        break;
+      case 'most_popular':
+        orderBy = { views: 'desc', salesCount: 'desc' };
+        break;
+      case 'relevance':
+        orderBy = { createdAt: 'desc' };
+        break;
+      case 'rating_desc':
       default:
         orderBy = { createdAt: 'desc' };
         break;
     }
-
-    const skip = (page - 1) * limit;
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -111,6 +132,12 @@ export class ProductRepository {
           },
           images: {
             select: { id: true, url: true, isPrimary: true },
+          },
+          seller: {
+            select: { id: true, name: true, avatar: true },
+          },
+          store: {
+            select: { id: true, name: true, logo: true, isVerified: true },
           },
           reviews: {
             select: { rating: true },
@@ -123,13 +150,19 @@ export class ProductRepository {
       prisma.product.count({ where }),
     ]);
 
-    // Format rating metrics & filter by minRating if requested
     let formattedProducts = products.map((product) => {
       const reviewCount = product.reviews.length;
       const avgRating =
         reviewCount > 0
-          ? parseFloat((product.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1))
-          : 4.8;
+          ? parseFloat(
+              (product.reviews.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0) / reviewCount).toFixed(1)
+            )
+          : 0;
+
+      const discount =
+        product.discountPrice && product.discountPrice < product.price
+          ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
+          : 0;
 
       const { reviews, ...productWithoutReviews } = product;
 
@@ -137,6 +170,7 @@ export class ProductRepository {
         ...productWithoutReviews,
         avgRating,
         reviewCount,
+        discount,
       };
     });
 
@@ -164,13 +198,20 @@ export class ProductRepository {
       },
       include: {
         category: {
-          select: { id: true, name: true, slug: true, description: true },
+          select: { id: true, name: true, slug: true, description: true, parentId: true },
         },
         images: true,
+        seller: {
+          select: { id: true, name: true, avatar: true },
+        },
+        store: {
+          select: { id: true, name: true, logo: true, description: true, isVerified: true },
+        },
         reviews: {
           include: {
             user: { select: { id: true, name: true, avatar: true } },
           },
+          where: { isApproved: true },
           orderBy: { createdAt: 'desc' },
         },
       },
@@ -181,13 +222,21 @@ export class ProductRepository {
     const reviewCount = product.reviews.length;
     const avgRating =
       reviewCount > 0
-        ? parseFloat((product.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1))
-        : 4.8;
+        ? parseFloat(
+            (product.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1)
+          )
+        : 0;
+
+    const ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    product.reviews.forEach((r) => {
+      ratingDistribution[r.rating as 1 | 2 | 3 | 4 | 5]++;
+    });
 
     return {
       ...product,
       avgRating,
       reviewCount,
+      ratingDistribution,
     };
   }
 
@@ -197,6 +246,8 @@ export class ProductRepository {
       include: {
         category: true,
         images: true,
+        seller: { select: { id: true, name: true, avatar: true } },
+        store: { select: { id: true, name: true, logo: true } },
       },
     });
   }
@@ -204,11 +255,42 @@ export class ProductRepository {
   static async findBySlug(slug: string) {
     return prisma.product.findUnique({
       where: { slug },
+      include: {
+        category: true,
+        images: true,
+        seller: { select: { id: true, name: true, avatar: true } },
+        store: { select: { id: true, name: true, logo: true } },
+      },
     });
   }
 
-  static async create(input: CreateProductInput, generatedSlug: string) {
-    const { images, title, description, price, discountPrice, stock, categoryId, isFeatured, isActive } = input;
+  static async findSellerProducts(sellerId: string) {
+    return prisma.product.findMany({
+      where: { sellerId },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        images: { select: { id: true, url: true, isPrimary: true } },
+        reviews: { select: { rating: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  static async create(input: CreateProductInput, generatedSlug: string, sellerId?: string) {
+    const {
+      images,
+      title,
+      description,
+      price,
+      discountPrice,
+      stock,
+      categoryId,
+      brand,
+      sku,
+      attributes,
+      isFeatured,
+      isActive,
+    } = input;
 
     return prisma.product.create({
       data: {
@@ -220,9 +302,13 @@ export class ProductRepository {
         isFeatured,
         isActive,
         slug: generatedSlug,
+        brand,
+        sku,
+        attributes,
         category: {
           connect: { id: categoryId },
         },
+        ...(sellerId ? { seller: { connect: { id: sellerId } } } : {}),
         images: images?.length
           ? {
               create: images.map((img, index) => ({
@@ -236,11 +322,12 @@ export class ProductRepository {
       include: {
         category: true,
         images: true,
+        seller: { select: { id: true, name: true, avatar: true } },
       },
     });
   }
 
-  static async update(id: string, input: UpdateProductInput) {
+  static async update(id: string, input: UpdateProductInput, sellerId?: string) {
     const { images, categoryId, ...data } = input;
 
     const updateData: any = { ...data };
@@ -260,19 +347,51 @@ export class ProductRepository {
       };
     }
 
+    const where: any = { id };
+    if (sellerId) {
+      where.sellerId = sellerId;
+    }
+
     return prisma.product.update({
-      where: { id },
+      where,
       data: updateData,
       include: {
         category: true,
         images: true,
+        seller: { select: { id: true, name: true, avatar: true } },
       },
     });
   }
 
-  static async delete(id: string) {
+  static async delete(id: string, sellerId?: string) {
+    const where: any = { id };
+    if (sellerId) {
+      where.sellerId = sellerId;
+    }
+
     return prisma.product.delete({
+      where,
+    });
+  }
+
+  static async approve(id: string) {
+    return prisma.product.update({
       where: { id },
+      data: { isApproved: true },
+    });
+  }
+
+  static async setCountViews(productId: string) {
+    return prisma.product.update({
+      where: { id: productId },
+      data: { views: { increment: 1 } },
+    });
+  }
+
+  static async incrementSalesCount(productId: string, quantity: number) {
+    return prisma.product.update({
+      where: { id: productId },
+      data: { salesCount: { increment: quantity } },
     });
   }
 }

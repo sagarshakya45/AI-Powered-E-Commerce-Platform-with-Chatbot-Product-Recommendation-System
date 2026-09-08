@@ -10,6 +10,7 @@ export const productQuerySchema = z.object({
   maxPrice: z.coerce.number().min(0).optional(),
   minRating: z.coerce.number().min(0).max(5).optional(),
   brand: z.string().optional(),
+  sellerId: z.string().optional(),
   inStock: z
     .string()
     .optional()
@@ -18,7 +19,27 @@ export const productQuerySchema = z.object({
     .string()
     .optional()
     .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-  sort: z.enum(['price_asc', 'price_desc', 'createdAt_desc', 'createdAt_asc', 'title_asc', 'title_desc', 'rating_desc']).default('createdAt_desc'),
+  isActive: z
+    .string()
+    .optional()
+    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+  isApproved: z
+    .string()
+    .optional()
+    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+  sort: z.enum([
+    'price_asc',
+    'price_desc',
+    'createdAt_desc',
+    'createdAt_asc',
+    'title_asc',
+    'title_desc',
+    'rating_desc',
+    'relevance',
+    'best_selling',
+    'highest_discount',
+    'most_popular',
+  ]).default('createdAt_desc'),
 });
 
 export type ProductQueryParams = z.infer<typeof productQuerySchema>;
@@ -30,6 +51,9 @@ export const createProductSchema = z.object({
   discountPrice: z.number().positive('Discount price must be greater than 0').optional().nullable(),
   stock: z.number().int().min(0, 'Stock cannot be negative').default(0),
   categoryId: z.string().min(1, 'Category ID is required'),
+  brand: z.string().optional(),
+  sku: z.string().optional(),
+  attributes: z.record(z.any()).optional(),
   isFeatured: z.boolean().default(false),
   isActive: z.boolean().default(true),
   images: z

@@ -24,6 +24,7 @@ enum OrderStatus {
   CONFIRMED
   PROCESSING
   SHIPPED
+  OUT_FOR_DELIVERY
   DELIVERED
   CANCELLED
 }
@@ -59,6 +60,11 @@ model User {
   recommendations RecommendationEvent[]
   chatConversations ChatConversation[]
   salesmanApplication SalesmanApplication?
+  products      Product[]     @relation("SellerProducts")
+  orderItems    OrderItem[]   @relation("OrderItemSeller")
+  productViews  ProductView[]
+  searchEvents  SearchEvent[]
+  store         Store?
 
   @@index([email])
   @@index([role])
@@ -79,6 +85,24 @@ model SalesmanApplication {
   @@index([userId])
   @@index([status])
   @@map("salesman_applications")
+}
+
+model Store {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  logo         String?
+  banner       String?
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  products     Product[]
+
+  @@index([userId])
+  @@map("stores")
 }
 
 model RefreshToken {
@@ -144,8 +168,18 @@ model Product {
   stock         Int            @default(0)
   isFeatured    Boolean        @default(false)
   isActive      Boolean        @default(true)
+  brand         String?
+  sku           String?
+  attributes    Json?
+  views         Int            @default(0)
+  salesCount    Int            @default(0)
+  isApproved    Boolean        @default(true)
   categoryId    String
   category      Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  sellerId      String?
+  seller        User?          @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: SetNull)
+  storeId       String?
+  store         Store?         @relation(fields: [storeId], references: [id], onDelete: SetNull)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -155,12 +189,15 @@ model Product {
   orderItems    OrderItem[]
   reviews       Review[]
   recommendationEvents RecommendationEvent[]
+  productViews  ProductView[]
 
   @@index([slug])
   @@index([categoryId])
   @@index([isFeatured])
   @@index([isActive])
   @@index([price])
+  @@index([sellerId])
+  @@index([isApproved])
   @@map("products")
 }
 
@@ -172,7 +209,7 @@ model ProductImage {
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@index([productId])
   @@map("product_images")
@@ -268,14 +305,18 @@ model OrderItem {
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId  String
   product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  sellerId   String?
+  seller     User?    @relation("OrderItemSeller", fields: [sellerId], references: [id], onDelete: SetNull)
   quantity   Int
   unitPrice  Float
   totalPrice Float
+  status     OrderStatus @default(PENDING)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
 
   @@index([orderId])
   @@index([productId])
+  @@index([sellerId])
   @@map("order_items")
 }
 
@@ -296,15 +337,18 @@ model Payment {
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  rating    Int
-  comment   String
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid())
+  rating          Int
+  title           String?
+  comment         String
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isVerifiedPurchase Boolean @default(false)
+  isApproved      Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([productId, userId])
   @@index([productId])
@@ -345,6 +389,35 @@ model RecommendationEvent {
   @@index([userId])
   @@index([productId])
   @@map("recommendation_events")
+}
+
+model ProductView {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("product_views")
+}
+
+model SearchEvent {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  query       String
+  resultCount Int
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([query])
+  @@index([createdAt])
+  @@map("search_events")
 }
 
 model ChatConversation {

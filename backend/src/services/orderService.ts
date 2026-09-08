@@ -28,6 +28,7 @@ export class OrderService {
           quantity: item.quantity,
           unitPrice,
           totalPrice: CouponService.round(unitPrice * item.quantity),
+          sellerId: product.sellerId || undefined,
         };
       });
 
@@ -39,6 +40,13 @@ export class OrderService {
         const coupon = await CouponService.validate(data.couponCode, totalAmount);
         couponId = coupon.id;
         discountAmount = coupon.discountAmount;
+
+        if (couponId) {
+          await tx.coupon.update({
+            where: { id: couponId },
+            data: { usedCount: { increment: 1 } },
+          });
+        }
       }
 
       const shipping = totalAmount >= 50 ? 0 : 10;
@@ -81,13 +89,6 @@ export class OrderService {
         include: { items: true },
       });
 
-      if (couponId) {
-        await tx.coupon.update({
-          where: { id: couponId },
-          data: { usedCount: { increment: 1 } },
-        });
-      }
-
       await tx.payment.create({
         data: {
           orderId: order.id,
@@ -96,6 +97,19 @@ export class OrderService {
           status: 'PENDING',
         },
       });
+
+      await tx.cartItem.deleteMany({
+        where: {
+          cart: { userId },
+        },
+      });
+
+      for (const item of orderItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { salesCount: { increment: item.quantity } },
+        });
+      }
 
       return order;
     });
@@ -127,11 +141,83 @@ export class OrderService {
     return prisma.order.findMany({
       where: { userId },
       include: {
-        items: { include: { product: { select: { id: true, title: true, images: true } } } },
+        items: {
+          include: {
+            product: {
+              select: { id: true, title: true, images: { select: { id: true, url: true, isPrimary: true } } },
+            },
+            seller: { select: { id: true, name: true } },
+          },
+        },
         payment: true,
         address: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  static async getOrderById(orderId: string, userId: string) {
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                images: { select: { id: true, url: true, isPrimary: true } },
+                price: true,
+                discountPrice: true,
+              },
+            },
+            seller: { select: { id: true, name: true, avatar: true } },
+          },
+        },
+        payment: true,
+        address: true,
+        coupon: true,
+      },
+    });
+
+    if (!order) {
+      throw new AppError('Order not found', 404);
+    }
+
+    return order;
+  }
+
+  static async getSellerOrders(sellerId: string) {
+    const orderItems = await prisma.orderItem.findMany({
+      where: { sellerId },
+      include: {
+        order: {
+          include: {
+            user: { select: { id: true, name: true, email: true } },
+            address: true,
+            payment: true,
+            coupon: true,
+          },
+        },
+        product: {
+          select: { id: true, title: true, images: { select: { id: true, url: true, isPrimary: true } } },
+        },
+      },
+      orderBy: { order: { createdAt: 'desc' } },
+    });
+
+    const ordersMap = new Map<string, any>();
+    for (const item of orderItems) {
+      const orderId = item.order.id;
+      if (!ordersMap.has(orderId)) {
+        ordersMap.set(orderId, {
+          ...item.order,
+          items: [],
+        });
+      }
+      ordersMap.get(orderId)!.items.push(item);
+    }
+
+    return Array.from(ordersMap.values());
   }
 }
