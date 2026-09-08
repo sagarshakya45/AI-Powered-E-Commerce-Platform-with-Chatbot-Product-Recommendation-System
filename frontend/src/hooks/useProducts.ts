@@ -51,6 +51,6 @@ export const useSearchProducts = (params: {
   return useQuery({
     queryKey: ['search', params],
     queryFn: () => productService.searchProducts(params),
-    enabled: Boolean(params.q || params.category || params.brand),
+    enabled: true,
   });
 };

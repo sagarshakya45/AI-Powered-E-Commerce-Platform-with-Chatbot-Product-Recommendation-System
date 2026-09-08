@@ -170,7 +170,7 @@ export const SearchPage: React.FC = () => {
 
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {Array.from({ length: 8 }).map((idx) => (
+          {Array.from({ length: 8 }).map((_, idx: number) => (
             <div key={idx} className="h-64 bg-white border border-slate-200 animate-pulse rounded-3xl" />
           ))}
         </div>

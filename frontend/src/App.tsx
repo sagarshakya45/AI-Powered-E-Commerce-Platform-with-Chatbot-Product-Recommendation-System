@@ -21,6 +21,14 @@ export const App: React.FC = () => {
     checkAuth();
   }, [checkAuth]);
 
+  useEffect(() => {
+    const handleLogout = () => {
+      useAuthStore.getState().logout();
+    };
+    window.addEventListener('auth:logout', handleLogout);
+    return () => window.removeEventListener('auth:logout', handleLogout);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router>

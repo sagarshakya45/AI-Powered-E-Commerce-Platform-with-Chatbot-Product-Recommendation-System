@@ -187,10 +187,21 @@ export interface Pagination {
 
 export interface PaginatedResponse<T> {
   products: T[];
-  pagination: Pagination;
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 export interface ProductsResponseData {
   products: Product[];
-  pagination: Pagination;
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
 }

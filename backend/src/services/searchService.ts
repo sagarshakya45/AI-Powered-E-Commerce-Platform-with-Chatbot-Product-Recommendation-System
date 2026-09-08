@@ -113,6 +113,9 @@ export class SearchService {
         break;
     }
 
+    const isRatingFiltered = minRating !== undefined;
+    const fetchTake = isRatingFiltered ? limit * 10 : limit;
+
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -123,8 +126,8 @@ export class SearchService {
           reviews: { select: { rating: true } },
         },
         orderBy,
-        skip,
-        take: limit,
+        skip: isRatingFiltered ? 0 : skip,
+        take: fetchTake,
       }),
       prisma.product.count({ where }),
     ]);
@@ -148,10 +151,12 @@ export class SearchService {
       };
     });
 
-    if (minRating !== undefined) {
+    if (isRatingFiltered && minRating !== undefined) {
       const filtered = formattedProducts.filter((p) => p.avgRating >= minRating);
+      const start = (page - 1) * limit;
+      const paginatedProducts = filtered.slice(start, start + limit);
       return {
-        products: filtered,
+        products: paginatedProducts,
         total: filtered.length,
         page,
         limit,

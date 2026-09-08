@@ -90,7 +90,7 @@ export const Navbar: React.FC = () => {
 
         if (data.brands?.length > 0 && results.length < 8) {
           data.brands.forEach((b: any) => {
-            results.push({ text: b, type: 'keyword' });
+            results.push({ text: b.name, type: 'keyword' });
           });
         }
 

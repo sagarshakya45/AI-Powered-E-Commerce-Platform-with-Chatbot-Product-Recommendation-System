@@ -1,7 +1,5 @@
 import apiClient from './apiClient';
-import { Product, ApiResponse, PaginatedResponse } from '../types';
-
-export interface ProductQueryParams {
+import { Product, ApiResponse, PaginatedResponse } from '../types';export interface ProductQueryParams {
   page?: number;
   limit?: number;
   search?: string;
@@ -64,7 +62,7 @@ export const productService = {
     sort?: string;
     page?: number;
     limit?: number;
-  }): Promise<{ products: Product[]; total: number; page: number; limit: number; totalPages: number }> => {
+  }): Promise<PaginatedResponse<Product>> => {
     const response = await apiClient.get<ApiResponse<any>>('/search', { params });
     return response.data.data;
   },

@@ -19,7 +19,7 @@ export interface SellerProduct {
   salesCount: number;
   categoryId: string;
   category?: { id: string; name: string; slug: string };
-  images: { id: string; url: string; isPrimary: boolean }[];
+  images: { id?: string; url: string; isPrimary: boolean }[];
   reviews?: { rating: number }[];
   createdAt: string;
   updatedAt: string;
@@ -81,6 +81,7 @@ export interface SellerAnalytics {
   topProducts: Array<{
     id: string;
     title: string;
+    image?: string;
     views: number;
     salesCount: number;
     avgRating: number;
@@ -107,7 +108,7 @@ export interface SellerAnalytics {
 }
 
 export const sellerService = {
-  getStore: async (): Promise<{ store: SellerStore } | null> => {
+  getStore: async (): Promise<SellerStore | null> => {
     const response = await apiClient.get<ApiResponse<{ store: SellerStore | null }>>('/seller/store');
     return response.data.data?.store || null;
   },

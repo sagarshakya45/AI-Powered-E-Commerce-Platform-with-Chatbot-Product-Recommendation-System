@@ -107,7 +107,7 @@ export const CartPage: React.FC = () => {
           {items.map(({ product, quantity }) => {
             const unitPrice = product.discountPrice ?? product.price;
             const primaryImg =
-              product.images?.find((i) => i.isPrimary)?.url ||
+              product.images?.find((i: { isPrimary: boolean }) => i.isPrimary)?.url ||
               product.images?.[0]?.url ||
               'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=300&q=80';
 
