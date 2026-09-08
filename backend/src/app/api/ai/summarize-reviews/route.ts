@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AIService } from '@/services/ai.service';
 import { corsHeaders, handleOptions } from '@/lib/cors';
+import { checkAIRateLimit, getClientIp } from '@/utils/rateLimiter';
 
 export async function OPTIONS() {
   return handleOptions();
 }
 
 export async function POST(req: NextRequest) {
+  if (!checkAIRateLimit(getClientIp(req))) {
+    return NextResponse.json(
+      { success: false, statusCode: 429, message: 'Too many requests. Please try again later.' },
+      { status: 429, headers: corsHeaders }
+    );
+  }
+
   try {
     const body = await req.json();
     const { productId } = body;
