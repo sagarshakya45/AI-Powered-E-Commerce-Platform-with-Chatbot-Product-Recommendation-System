@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { requireEnv } from '@/utils/env';
 import { AIProvider, Message } from './aiProvider';
 
 export class GeminiProvider implements AIProvider {
@@ -7,7 +8,7 @@ export class GeminiProvider implements AIProvider {
 
   constructor() {
     this.ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY || 'dummy_key',
+      apiKey: requireEnv('GEMINI_API_KEY'),
     });
     this.model = 'gemini-3.6-flash';
   }

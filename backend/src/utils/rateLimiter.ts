@@ -3,27 +3,31 @@ import { NextRequest } from 'next/server';
 type Attempt = { timestamp: number };
 type RateLimiter = Map<string, Attempt[]>;
 
-// In-memory rate limiter. NOTE: this is process-local and resets on server restart.
+// In-memory rate limiter factory.
+// NOTE: this is process-local and resets on server restart.
 // Replace with a durable store like Redis before production use.
-const limiter: RateLimiter = new Map();
+export function createRateLimiter(maxAttempts: number, windowMs: number) {
+  const attempts: RateLimiter = new Map();
 
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+  return function check(ip: string): boolean {
+    const now = Date.now();
+    const recent = (attempts.get(ip) || []).filter((t) => now - t.timestamp < windowMs);
+    if (recent.length >= maxAttempts) {
+      return false;
+    }
+    recent.push({ timestamp: now });
+    attempts.set(ip, recent);
+    return true;
+  };
+}
+
+const checkAuthRateLimit = createRateLimiter(5, 15 * 60 * 1000);
 
 export function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const attempts = limiter.get(ip) || [];
-
-  const recent = attempts.filter((t) => now - t.timestamp < WINDOW_MS);
-
-  if (recent.length >= MAX_ATTEMPTS) {
-    return false;
-  }
-
-  recent.push({ timestamp: now });
-  limiter.set(ip, recent);
-  return true;
+  return checkAuthRateLimit(ip);
 }
+
+export const checkAIRateLimit = createRateLimiter(60, 60 * 1000);
 
 export function getClientIp(req: NextRequest): string {
   return (

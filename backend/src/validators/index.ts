@@ -20,3 +20,13 @@ export const createProductSchema = z.object({
   categoryId: z.string().uuid('Invalid category ID'),
   isFeatured: z.boolean().optional(),
 });
+
+export const chatbotMessageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string().max(2000, 'Message content must be 2000 characters or fewer'),
+});
+
+export const chatbotRequestSchema = z.object({
+  message: z.string().min(1, 'Message is required'),
+  history: z.array(chatbotMessageSchema).max(20, 'History is limited to the most recent 20 messages').optional(),
+});

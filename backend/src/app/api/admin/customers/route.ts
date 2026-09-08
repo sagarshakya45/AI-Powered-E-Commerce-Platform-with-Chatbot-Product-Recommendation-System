@@ -28,6 +28,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, statusCode: 200, data: { customers } }, { headers: corsHeaders });
   } catch (error: any) {
-    return NextResponse.json({ success: false, statusCode: 500, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, statusCode: 500, message: error.message }, { status: 500, headers: corsHeaders });
   }
 }

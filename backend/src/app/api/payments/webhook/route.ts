@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PaymentService } from '@/services/paymentService';
 import { corsHeaders, handleOptions } from '@/lib/cors';
+import { requireEnv } from '@/utils/env';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy', {
+const stripe = new Stripe(requireEnv('STRIPE_SECRET_KEY'), {
   apiVersion: '2024-06-20' as any,
 });
 
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(
       payload,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET || 'dummy_webhook_secret'
+      requireEnv('STRIPE_WEBHOOK_SECRET')
     );
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 400, headers: corsHeaders });

@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { requireEnv } from '@/utils/env';
 import { AIProvider, Message } from './aiProvider';
 
 export class OpenAIProvider implements AIProvider {
@@ -7,7 +8,7 @@ export class OpenAIProvider implements AIProvider {
 
   constructor() {
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || 'dummy_key',
+      apiKey: requireEnv('OPENAI_API_KEY'),
     });
     this.model = 'gpt-4o-mini';
   }

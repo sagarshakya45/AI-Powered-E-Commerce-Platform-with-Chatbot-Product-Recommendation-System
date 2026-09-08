@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/utils/auth';
+import { OrderService } from '@/services/orderService';
 import { corsHeaders, handleOptions } from '@/lib/cors';
 
 export async function OPTIONS() {
@@ -20,10 +21,20 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ success: false, statusCode: 400, message: 'Invalid status' }, { status: 400, headers: corsHeaders });
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
-      data: { status }
-    });
+    let updatedOrder;
+
+    if (status === 'CANCELLED') {
+      await OrderService.cancelAndRestore(params.id);
+      updatedOrder = await prisma.order.findUnique({
+        where: { id: params.id },
+        include: { items: true },
+      });
+    } else {
+      updatedOrder = await prisma.order.update({
+        where: { id: params.id },
+        data: { status }
+      });
+    }
 
     return NextResponse.json({ success: true, statusCode: 200, data: { order: updatedOrder } }, { headers: corsHeaders });
   } catch (error: any) {

@@ -81,12 +81,19 @@ export class OrderService {
         include: { items: true },
       });
 
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+
       await tx.payment.create({
         data: {
           orderId: order.id,
           amount: finalAmount,
           paymentMethod: data.paymentMethod || 'card',
-          status: data.paymentMethod === 'cod' ? 'PENDING' : 'PENDING',
+          status: 'PENDING',
         },
       });
 

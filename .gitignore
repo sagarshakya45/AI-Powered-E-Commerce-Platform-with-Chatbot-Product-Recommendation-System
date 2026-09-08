@@ -48,3 +48,4 @@ Thumbs.db
 .vscode/
 .idea/
 .vercel
+.kilo/kilo.jsonc
