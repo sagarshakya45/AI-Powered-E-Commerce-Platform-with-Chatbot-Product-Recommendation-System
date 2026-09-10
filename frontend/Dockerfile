@@ -1,13 +1,18 @@
-FROM node:20-alpine
-
+# Stage 1: Build the Vite app
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
+RUN npm run build
 
-EXPOSE 5173
+# Stage 2: Serve via nginx (no Node.js, no devDependencies in final image)
+FROM nginx:alpine AS runner
 
-# By default, start the Vite development server
-CMD ["npm", "run", "dev", "--", "--host"]
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

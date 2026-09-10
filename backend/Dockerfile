@@ -1,17 +1,32 @@
-FROM node:20-alpine
-
+# Stage 1: Build
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Generate Prisma client before starting
 COPY prisma ./prisma
 RUN npx prisma generate
 
 COPY . .
+RUN npm run build
 
-EXPOSE 3000
+# Stage 2: Production runtime (no devDependencies, no source files)
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-# By default, start the Next.js development server
-CMD ["npm", "run", "dev"]
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Prisma client must be generated in the runtime image too
+COPY prisma ./prisma
+RUN npx prisma generate
+
+# Copy Next.js production output from builder
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
+EXPOSE 5000
+CMD ["npm", "run", "start"]

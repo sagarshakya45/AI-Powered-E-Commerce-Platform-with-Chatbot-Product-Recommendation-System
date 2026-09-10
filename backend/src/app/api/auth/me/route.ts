@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateUser } from '@/utils/auth';
-import { corsHeaders, handleOptions } from '@/lib/cors';
+import { getCorsHeaders, handleOptions } from '@/lib/cors';
 
-export async function OPTIONS() {
-  return handleOptions();
+export async function OPTIONS(req: NextRequest) {
+  return handleOptions(req.headers.get('origin'));
 }
 
 export async function GET(req: NextRequest) {
+  const corsHeaders = getCorsHeaders(req.headers.get('origin'));
   try {
     const user = await authenticateUser(req);
 

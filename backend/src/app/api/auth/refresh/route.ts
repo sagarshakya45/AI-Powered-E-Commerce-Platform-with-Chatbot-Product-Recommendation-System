@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyRefreshToken, generateAccessToken, createCookieHeader } from '@/utils/auth';
-import { corsHeaders, handleOptions } from '@/lib/cors';
+import { getCorsHeaders, handleOptions } from '@/lib/cors';
 
-export async function OPTIONS() {
-  return handleOptions();
+export async function OPTIONS(req: NextRequest) {
+  return handleOptions(req.headers.get('origin'));
 }
 
 export async function POST(req: NextRequest) {
+  const corsHeaders = getCorsHeaders(req.headers.get('origin'));
   try {
     const refreshToken = req.cookies.get('refreshToken')?.value;
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ChatbotService } from '@/services/chatbot.service';
-import { chatbotRequestSchema } from '@/validators/index';
+import { chatbotRequestSchema } from '@/validators/chatbotValidator';
 import { corsHeaders, handleOptions } from '@/lib/cors';
 import { checkAIRateLimit, getClientIp } from '@/utils/rateLimiter';
 

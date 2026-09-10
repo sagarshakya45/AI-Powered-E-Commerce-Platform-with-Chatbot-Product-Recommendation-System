@@ -1,7 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, ArrowRight, Sparkles } from 'lucide-react';
-import { HOME_BANNERS } from '../../data/catalog';
+
+const HOME_BANNERS = [
+  {
+    id: 'mega-sale',
+    eyebrow: 'Mega Deal Days',
+    title: 'Up to 60% off electronics',
+    subtitle: 'Headphones, laptops, and smart home — limited time.',
+    cta: 'Shop electronics',
+    to: '/products?category=electronics',
+    image: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?auto=format&fit=crop&w=1600&q=80',
+  },
+  {
+    id: 'fashion-week',
+    eyebrow: 'Fashion week',
+    title: 'New season styles from $25',
+    subtitle: 'Jackets, sneakers, and everyday essentials.',
+    cta: 'Shop fashion',
+    to: '/products?category=fashion',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80',
+  },
+  {
+    id: 'home-refresh',
+    eyebrow: 'Home refresh',
+    title: 'Kitchen & living under $100',
+    subtitle: 'Cookware, lighting, and comfort picks.',
+    cta: 'Shop home',
+    to: '/products?category=home-living',
+    image: 'https://images.unsplash.com/photo-1556912173-46c336c7fd55?auto=format&fit=crop&w=1600&q=80',
+  },
+];
+
 
 export const HeroCarousel: React.FC = () => {
   const [index, setIndex] = useState(0);

@@ -20,14 +20,10 @@ services:
       dockerfile: Dockerfile
     container_name: ecom_backend
     ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-      - /app/.next
+      - "5000:5000"
     environment:
       - DATABASE_URL=postgresql://postgres:password@postgres:5432/ecom_db?schema=public
-      - NODE_ENV=development
+      - NODE_ENV=production
     depends_on:
       - postgres
     restart: unless-stopped
@@ -38,12 +34,7 @@ services:
       dockerfile: Dockerfile
     container_name: ecom_frontend
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_BASE_URL=http://localhost:3000/api
+      - "80:80"
     depends_on:
       - backend
     restart: unless-stopped

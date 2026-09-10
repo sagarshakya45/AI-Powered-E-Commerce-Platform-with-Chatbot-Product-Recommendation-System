@@ -4,8 +4,7 @@ import { handleControllerError } from '@/utils/errorHandler';
 import { productQuerySchema, createProductSchema } from '@/validators/productValidator';
 import { ProductService } from '@/services/productService';
 import { handleOptions, corsHeaders } from '@/lib/cors';
-import { requireAdmin } from '@/utils/auth';
-import { authenticateUser } from '@/utils/auth';
+import { requireAdmin, authenticateUser } from '@/utils/auth';
 
 export async function OPTIONS() {
   return handleOptions();
