@@ -40,7 +40,7 @@ export class SearchService {
       where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
-        { brand: { equals: searchTerm, mode: 'insensitive' } },
+        { brand: { contains: searchTerm, mode: 'insensitive' } },
         { sku: { equals: searchTerm, mode: 'insensitive' } },
         { category: { name: { contains: searchTerm, mode: 'insensitive' } } },
         {
