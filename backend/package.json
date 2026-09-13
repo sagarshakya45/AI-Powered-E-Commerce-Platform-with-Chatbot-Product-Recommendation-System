@@ -2,21 +2,21 @@
   "name": "backend",
   "version": "0.1.0",
   "private": true,
-   "engines": {
+  "engines": {
     "node": "20.x"
- },
- "scripts": {
-  "dev": "next dev -p 5000",
-  "build": "prisma generate && next build",
-  "start": "next start -p 5000",
-  "prisma:generate": "prisma generate"
-},
+  },
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "prisma generate && next build",
+    "start": "next start -p 5000",
+    "prisma:generate": "prisma generate"
+  },
   "dependencies": {
     "@google/genai": "^2.20.0",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "next": "14.2.11",
+    "next": "^14.2.32",
     "openai": "^7.8.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
